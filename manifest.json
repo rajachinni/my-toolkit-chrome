@@ -10,7 +10,8 @@
             ],
             "js": [
                 "content.js",
-                "playlist-icons.js"
+                "playlist-icons.js",
+                "yt-music-playlist-filtering.js"
             ],
             "run_at": "document_idle"
         }
