@@ -11,7 +11,8 @@
             "js": [
                 "content.js",
                 "playlist-icons.js",
-                "yt-music-playlist-filtering.js"
+                "yt-music-playlist-filtering.js",
+                "yt-autoplay-disabler.js"
             ],
             "run_at": "document_idle"
         }
