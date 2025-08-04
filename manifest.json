@@ -18,7 +18,8 @@
         },
         {
             "matches": [
-                "*://you.com/*"
+                "https://you.com/",
+                "https://you.com/*"
             ],
             "js": [
                 "you-web-search-disabler.js",
@@ -29,7 +30,7 @@
     ],
     "host_permissions": [
         "*://www.youtube.com/*",
-        "*://you.com/*"
+        "https://you.com/"
     ],
     "icons": {
         "48": "icon.png"

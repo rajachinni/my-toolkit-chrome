@@ -1,34 +1,12 @@
-// You.com Auto-Config Script - Auto Click and Model Selection
-// Automatically clicks Auto button and selects Claude Sonnet 4 (Extended)
+// You.com Auto-Config Script - Model Selection
+// Automatically selects Claude Sonnet 4 (Extended) when model popup appears
 
 (function() {
     'use strict';
 
-    let isProcessingModelSelection = false;
-    let autoButtonClicked = false;
 
-    // Function to automatically click the Auto button
-    function clickAutoButton() {
-        if (autoButtonClicked) return;
-        
-        // Look for the Auto button with sparkles icon
-        const autoButton = document.querySelector('button[type="button"] span.n6zur96');
-        const autoButtonParent = autoButton ? autoButton.closest('button') : null;
-        
-        if (autoButtonParent && !autoButtonParent.hasAttribute('data-auto-clicked')) {
-            autoButtonClicked = true;
-            autoButtonParent.setAttribute('data-auto-clicked', 'true');
-            
-            console.log('You.com Auto-Config: Automatically clicking Auto button...');
-            autoButtonParent.click();
-            console.log('You.com Auto-Config: Auto button clicked automatically');
-            
-            // Reset the flag after a delay to allow for future clicks
-            setTimeout(() => {
-                autoButtonClicked = false;
-            }, 2000);
-        }
-    }
+
+    let isProcessingModelSelection = false;
 
     // Function to select Claude Sonnet 4 (Extended)
     function selectClaudeSonnet4Extended() {
@@ -49,6 +27,17 @@
             claudeButton.click();
             console.log('You.com Auto-Config: Claude Sonnet 4 (Extended) selected');
             
+            // Click outside to close popup after selection
+            setTimeout(() => {
+                document.body.click();
+                console.log('You.com Auto-Config: Clicked outside to close model selection popup');
+                
+                // Focus on the textarea after model selection
+                setTimeout(() => {
+                    focusTextarea();
+                }, 200);
+            }, 300);
+            
             // Reset processing flag after a delay
             setTimeout(() => {
                 isProcessingModelSelection = false;
@@ -56,28 +45,32 @@
         }
     }
 
-    // Function to wait for Auto button and click it
-    function waitForAutoButtonAndClick(maxAttempts = 30) {
-        let attempts = 0;
+    // Function to focus on the textarea
+    function focusTextarea() {
+        // First try to find the specific textarea by ID
+        let textarea = document.querySelector('#search-input-textarea');
         
-        const checkForAutoButton = () => {
-            attempts++;
-            const autoButton = document.querySelector('button[type="button"] span.n6zur96');
-            const autoButtonParent = autoButton ? autoButton.closest('button') : null;
-            
-            if (autoButtonParent) {
-                // Auto button found, click it
-                setTimeout(clickAutoButton, 100);
-                setTimeout(clickAutoButton, 300);
-                setTimeout(clickAutoButton, 500);
-            } else if (attempts < maxAttempts) {
-                // Auto button not found yet, try again
-                setTimeout(checkForAutoButton, 200);
-            }
-        };
+        // If not found by ID, try by placeholder
+        if (!textarea) {
+            textarea = document.querySelector('textarea[placeholder="How can I help?"]');
+        }
         
-        checkForAutoButton();
+        // Fallback to the original follow-up textarea
+        if (!textarea) {
+            textarea = document.querySelector('textarea[placeholder="Ask a follow-up..."]');
+        }
+        
+        if (textarea) {
+            console.log('You.com Auto-Config: Focusing on textarea...');
+            textarea.focus();
+            textarea.click();
+            console.log('You.com Auto-Config: Textarea focused and clicked');
+        } else {
+            console.log('You.com Auto-Config: Textarea not found');
+        }
     }
+
+
 
     // Function to wait for model selection popup and then select Claude
     function waitForModelPopupAndSelect(maxAttempts = 20) {
@@ -101,41 +94,17 @@
         checkForPopup();
     }
 
-    // Function to set up Auto button click handler for model selection
-    function setupAutoButtonHandler() {
-        // Look for the Auto button with sparkles icon
-        const autoButton = document.querySelector('button[type="button"] span.n6zur96');
-        const autoButtonParent = autoButton ? autoButton.closest('button') : null;
-        
-        if (autoButtonParent && !autoButtonParent.hasAttribute('data-auto-model-handler')) {
-            autoButtonParent.setAttribute('data-auto-model-handler', 'true');
-            
-            autoButtonParent.addEventListener('click', function() {
-                console.log('You.com Auto-Config: Auto button clicked, waiting for model popup...');
-                waitForModelPopupAndSelect();
-            });
-            
-            console.log('You.com Auto-Config: Handler attached to Auto button');
-        }
-    }
+
 
     // Observer for dynamic content
     function setupObserver() {
         const observer = new MutationObserver(function(mutations) {
-            let shouldCheckForAutoButton = false;
             let shouldCheckForModelPopup = false;
-            let shouldClickAutoButton = false;
             
             mutations.forEach(function(mutation) {
                 if (mutation.type === 'childList') {
                     mutation.addedNodes.forEach(function(node) {
                         if (node.nodeType === Node.ELEMENT_NODE) {
-                            // Check if Auto button was added
-                            if (node.querySelector && node.querySelector('span.n6zur96')) {
-                                shouldCheckForAutoButton = true;
-                                shouldClickAutoButton = true;
-                            }
-                            
                             // Check if model selection popup was added
                             if (node.matches && node.matches('div[role="tooltip"][aria-label="Select agent"]')) {
                                 shouldCheckForModelPopup = true;
@@ -146,15 +115,6 @@
                     });
                 }
             });
-            
-            if (shouldCheckForAutoButton) {
-                setTimeout(setupAutoButtonHandler, 50);
-            }
-            
-            if (shouldClickAutoButton) {
-                setTimeout(clickAutoButton, 100);
-                setTimeout(clickAutoButton, 300);
-            }
             
             if (shouldCheckForModelPopup) {
                 setTimeout(selectClaudeSonnet4Extended, 50);
@@ -172,23 +132,20 @@
 
     // Initialize everything
     function init() {
-        console.log('You.com Auto-Config: Initializing auto-click and model selection...');
-        
-        // Try to set up button handlers immediately
-        setupAutoButtonHandler();
-        
-        // Click Auto button automatically
-        waitForAutoButtonAndClick();
+        console.log('You.com Auto-Config: Initializing model selection...');
         
         // Set up observer for dynamic content
         setupObserver();
         
-        // Retry finding the buttons periodically
+        // Retry finding the model popup periodically
         const retryIntervals = [500, 1000, 2000, 5000];
         retryIntervals.forEach(delay => {
             setTimeout(() => {
-                setupAutoButtonHandler();
-                waitForAutoButtonAndClick(); // Retry clicking Auto button
+                // Check if model popup is already open
+                const popup = document.querySelector('div[role="tooltip"][aria-label="Select agent"]');
+                if (popup) {
+                    selectClaudeSonnet4Extended();
+                }
             }, delay);
         });
     }
@@ -206,13 +163,12 @@
         const url = location.href;
         if (url !== lastUrl) {
             lastUrl = url;
-            console.log('You.com Auto-Config: Page navigation detected, reinitializing auto-click...');
-            autoButtonClicked = false; // Reset auto button click state
+            console.log('You.com Auto-Config: Page navigation detected, reinitializing model selection...');
             setTimeout(init, 1000);
         }
     });
     
     urlObserver.observe(document, { subtree: true, childList: true });
     
-    console.log('You.com Auto-Config: Auto-click and model selection script loaded');
+    console.log('You.com Auto-Config: Model selection script loaded');
 })(); 

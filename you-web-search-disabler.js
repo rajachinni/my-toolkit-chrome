@@ -4,7 +4,29 @@
 (function() {
     'use strict';
 
+    // Don't run on search pages
+    if (window.location.pathname === '/search' || window.location.pathname.includes('/search')) {
+        console.log('You.com Auto-Config: Skipping web-search-disabler script on search page');
+        return;
+    }
+
     let isProcessingWebSearch = false;
+
+    // Function to automatically click the web search settings button
+    function autoClickWebSearchButton() {
+        const webButton = document.querySelector('button[aria-label="Open web search settings"]');
+        
+        if (webButton && !webButton.hasAttribute('data-auto-clicked')) {
+            webButton.setAttribute('data-auto-clicked', 'true');
+            console.log('You.com Auto-Config: Automatically clicking web search settings button...');
+            webButton.click();
+            
+            // Wait for popup and then uncheck
+            setTimeout(() => {
+                waitForWebSearchPopupAndUncheck();
+            }, 100);
+        }
+    }
 
     // Function to click the checkbox to uncheck web search
     function uncheckWebSearch() {
@@ -32,10 +54,43 @@
             
             console.log('You.com Auto-Config: Web search disabled');
             
+            // Hide the web search menu after disabling
+            setTimeout(() => {
+                hideWebSearchMenu();
+                hideWebSearchPopup(); // Also hide the specific popup
+            }, 100);
+            
             // Reset processing flag after a delay
             setTimeout(() => {
                 isProcessingWebSearch = false;
             }, 500);
+        }
+    }
+
+    // Function to hide the web search menu
+    function hideWebSearchMenu() {
+        const webSearchMenu = document.querySelector('div[role="menu"][id*="r"]');
+        if (webSearchMenu) {
+            console.log('You.com Auto-Config: Hiding web search menu...');
+            webSearchMenu.style.display = 'none';
+            webSearchMenu.style.visibility = 'hidden';
+            webSearchMenu.style.opacity = '0';
+            console.log('You.com Auto-Config: Web search menu hidden');
+        }
+    }
+
+    // Function to hide the specific web search popup with globe icon
+    function hideWebSearchPopup() {
+        // Look for the specific popup with the structure you provided
+        const webSearchPopup = document.querySelector('div[role="menu"].ab8ju70._12e5ba50._1gccq3g0');
+        
+        if (webSearchPopup) {
+            console.log('You.com Auto-Config: Hiding specific web search popup...');
+            webSearchPopup.style.display = 'none';
+            webSearchPopup.style.visibility = 'hidden';
+            webSearchPopup.style.opacity = '0';
+            webSearchPopup.style.pointerEvents = 'none';
+            console.log('You.com Auto-Config: Specific web search popup hidden');
         }
     }
 
@@ -82,6 +137,7 @@
         const observer = new MutationObserver(function(mutations) {
             let shouldCheckForWebButton = false;
             let shouldCheckForWebPopup = false;
+            let shouldAutoClickWebButton = false;
             
             mutations.forEach(function(mutation) {
                 if (mutation.type === 'childList') {
@@ -90,14 +146,23 @@
                             // Check if Web button was added
                             if (node.matches && node.matches('button[aria-label="Open web search settings"]')) {
                                 shouldCheckForWebButton = true;
+                                shouldAutoClickWebButton = true;
                             } else if (node.querySelector && node.querySelector('button[aria-label="Open web search settings"]')) {
                                 shouldCheckForWebButton = true;
+                                shouldAutoClickWebButton = true;
                             }
                             
                             // Check if web search popup was added
                             if (node.matches && node.matches('div[role="menu"]')) {
                                 shouldCheckForWebPopup = true;
                             } else if (node.querySelector && node.querySelector('div[role="menu"]')) {
+                                shouldCheckForWebPopup = true;
+                            }
+                            
+                            // Check if specific web search popup with globe icon was added
+                            if (node.matches && node.matches('div[role="menu"].ab8ju70._12e5ba50._1gccq3g0')) {
+                                shouldCheckForWebPopup = true;
+                            } else if (node.querySelector && node.querySelector('div[role="menu"].ab8ju70._12e5ba50._1gccq3g0')) {
                                 shouldCheckForWebPopup = true;
                             }
                         }
@@ -109,9 +174,14 @@
                 setTimeout(setupWebButtonHandler, 50);
             }
             
+            if (shouldAutoClickWebButton) {
+                setTimeout(autoClickWebSearchButton, 100);
+            }
+            
             if (shouldCheckForWebPopup) {
                 setTimeout(uncheckWebSearch, 50);
                 setTimeout(uncheckWebSearch, 150);
+                setTimeout(hideWebSearchPopup, 200); // Also hide the specific popup
             }
         });
 
@@ -130,6 +200,9 @@
         // Try to set up button handlers immediately
         setupWebButtonHandler();
         
+        // Try to auto-click the web search button immediately
+        autoClickWebSearchButton();
+        
         // Set up observer for dynamic content
         setupObserver();
         
@@ -138,6 +211,7 @@
         retryIntervals.forEach(delay => {
             setTimeout(() => {
                 setupWebButtonHandler();
+                autoClickWebSearchButton();
             }, delay);
         });
     }
