@@ -15,10 +15,21 @@
                 "yt-autoplay-disabler.js"
             ],
             "run_at": "document_idle"
+        },
+        {
+            "matches": [
+                "*://you.com/*"
+            ],
+            "js": [
+                "you-web-search-disabler.js",
+                "you-auto-select-model.js"
+            ],
+            "run_at": "document_idle"
         }
     ],
     "host_permissions": [
-        "*://www.youtube.com/*"
+        "*://www.youtube.com/*",
+        "*://you.com/*"
     ],
     "icons": {
         "48": "icon.png"
