@@ -4,11 +4,11 @@
     
     // Playlists to hide when "Playlists" chip is selected or no chip is selected
     const PLAYLISTS_TO_HIDE = [
-        'Gym', 
+        'Liked videos', 
         'Saved Supermix', 
+        'Workout',
         'Current', 
-        'Indian', 
-        'English', 
+        'Indian',
         'Peace', 
         'Feel Good', 
         'Dance', 
