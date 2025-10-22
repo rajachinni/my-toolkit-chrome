@@ -1,11 +1,11 @@
-console.log("YouTube Plus: content script loaded");
+console.log("YouTube Player Buttons: content script loaded");
 
 let lastUrl = location.href;
 
 function detectUrlChange() {
   const currentUrl = location.href;
   if (currentUrl !== lastUrl) {
-    console.log('[YouTube Plus] Navigation detected');
+    console.log('[YouTube Player Buttons] Navigation detected');
     lastUrl = currentUrl;
     
     if (currentUrl.includes('/watch')) {
@@ -17,26 +17,6 @@ function detectUrlChange() {
     return true;
   }
   return false;
-}
-
-function triggerSaveToPlaylist() {
-  try {
-    const saveButton = document.querySelector('button[title="Save"][aria-label="Save to playlist"]') ||
-                      document.querySelector('button[aria-label="Save to playlist"]') ||
-                      Array.from(document.querySelectorAll('button.yt-spec-button-shape-next')).find(
-                        btn => btn.title === 'Save' || btn.getAttribute('aria-label') === 'Save to playlist'
-                      );
-    
-    if (saveButton) {
-      saveButton.click();
-      console.log('[YouTube Plus] Clicked Save to playlist button');
-    } else {
-      console.warn('[YouTube Plus] Save to playlist button not found');
-    }
-    
-  } catch (error) {
-    console.error('[YouTube Plus] Error triggering save to playlist:', error);
-  }
 }
 
 function createWatchLaterButton() {
@@ -57,8 +37,9 @@ function createWatchLaterButton() {
 
   watchLaterBtn.onclick = (e) => {
     e.stopPropagation();
-    console.log('[YouTube Plus] Watch later button clicked');
-    executeYouTubeCommand('add-to-watch-later');
+    console.log('[YouTube Player Buttons] Watch later button clicked');
+    // Dispatch custom event for playlist functionality
+    window.dispatchEvent(new CustomEvent('youtube-plus-watch-later', { detail: { action: 'add-to-watch-later' } }));
   };
 
   return watchLaterBtn;
@@ -85,11 +66,31 @@ function createSaveButton() {
 
   saveBtn.onclick = (e) => {
     e.stopPropagation();
-    console.log('[YouTube Plus] Save button clicked');
+    console.log('[YouTube Player Buttons] Save button clicked');
     triggerSaveToPlaylist();
   };
 
   return saveBtn;
+}
+
+function triggerSaveToPlaylist() {
+  try {
+    const saveButton = document.querySelector('button[title="Save"][aria-label="Save to playlist"]') ||
+                      document.querySelector('button[aria-label="Save to playlist"]') ||
+                      Array.from(document.querySelectorAll('button.yt-spec-button-shape-next')).find(
+                        btn => btn.title === 'Save' || btn.getAttribute('aria-label') === 'Save to playlist'
+                      );
+    
+    if (saveButton) {
+      saveButton.click();
+      console.log('[YouTube Player Buttons] Clicked Save to playlist button');
+    } else {
+      console.warn('[YouTube Player Buttons] Save to playlist button not found');
+    }
+    
+  } catch (error) {
+    console.error('[YouTube Player Buttons] Error triggering save to playlist:', error);
+  }
 }
 
 function addCustomButtons() {
@@ -137,7 +138,7 @@ function addCustomButtons() {
     return true;
 
   } catch (err) {
-    console.error('[YouTube Plus] Error adding custom buttons:', err);
+    console.error('[YouTube Player Buttons] Error adding custom buttons:', err);
     return false;
   }
 }
@@ -202,54 +203,3 @@ style.textContent = `
   }
 `;
 document.head.appendChild(style);
-
-// YouTube command execution
-function executeYouTubeCommand(action) {
-  const getAddVideoParams = (videoId) => ({
-    clickTrackingParams: "",
-    commandMetadata: { webCommandMetadata: { sendPost: true, apiUrl: "/youtubei/v1/browse/edit_playlist" } },
-    playlistEditEndpoint: { playlistId: "WL", actions: [{ addedVideoId: videoId, action: "ACTION_ADD_VIDEO" }] }
-  });
-  
-  const getRemoveVideoParams = (videoId) => ({
-    clickTrackingParams: "",
-    commandMetadata: { webCommandMetadata: { sendPost: true, apiUrl: "/youtubei/v1/browse/edit_playlist" } },
-    playlistEditEndpoint: { playlistId: "WL", actions: [{ action: "ACTION_REMOVE_VIDEO_BY_VIDEO_ID", removedVideoId: videoId }] }
-  });
-
-  const sendActionToNativeYouTubeHandler = (getParams) => {
-    const location = new URL(window.location.href);
-    const appElement = document.querySelector("ytd-app");
-    let videoId = location.searchParams.get("v");
-
-    if (location.pathname.startsWith("/shorts/")) {
-      videoId = location.pathname.split("/")[2];
-    }
-
-    if (!videoId || !appElement) {
-      return;
-    }
-  
-    const event = new window.CustomEvent('yt-action', {
-      detail: {
-        actionName: 'yt-service-request',
-        returnValue: [],
-        args: [{ data: {} }, getParams(videoId)],
-        optionalAction: false,
-      }
-    });
-  
-    appElement.dispatchEvent(event);
-  };
-
-  try {
-    if (action === "add-to-watch-later") {
-      sendActionToNativeYouTubeHandler(getAddVideoParams);
-    }
-    if (action === "remove-from-watch-later") {
-      sendActionToNativeYouTubeHandler(getRemoveVideoParams);
-    }
-  } catch (error) {
-    console.warn("Error while sending message to native YouTube handler", error);
-  }
-}
