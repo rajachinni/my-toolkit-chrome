@@ -452,6 +452,7 @@ style.textContent = `
     transition: opacity 0.2s ease;
     position: relative;
     z-index: 1000;
+    vertical-align: top;
   }
   #ytp-custom-watch-later-btn:hover, #ytp-custom-save-btn:hover {
     opacity: 0.8;
@@ -468,6 +469,26 @@ style.textContent = `
     align-items: center;
     margin-left: auto;
     gap: 8px;
+  }
+  /* Fix for minimized player - ensure buttons stay aligned with other controls */
+  .ytp-miniplayer #ytp-custom-watch-later-btn, 
+  .ytp-miniplayer #ytp-custom-save-btn {
+    width: 40px;
+    height: 40px;
+    margin-right: 4px;
+  }
+  .ytp-miniplayer #ytp-custom-watch-later-btn svg, 
+  .ytp-miniplayer #ytp-custom-save-btn svg {
+    width: 40px;
+    height: 40px;
+  }
+  /* Ensure proper alignment for our custom buttons only */
+  .ytp-right-controls {
+    display: flex !important;
+  }
+  /* Specific alignment for our custom buttons to match existing controls */
+  #ytp-custom-watch-later-btn, #ytp-custom-save-btn {
+    align-self: center;
   }
 `;
 document.head.appendChild(style);
