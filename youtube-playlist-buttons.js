@@ -85,8 +85,22 @@ function addXIcons() {
         setTimeout(() => {
           const menuPopup = document.querySelector('ytd-menu-popup-renderer[role="menu"]');
           if (menuPopup) {
-            const removeItem = Array.from(menuPopup.querySelectorAll('tp-yt-paper-item, ytd-menu-service-item-renderer'))
-              .find(el => el.textContent && el.textContent.trim().toLowerCase().includes('remove from watch later'));
+            // Check if we're in watch later playlist
+            const isWatchLater = window.location.pathname.includes('/playlist') && 
+                                 (window.location.search.includes('list=WL') || 
+                                  document.querySelector('ytd-playlist-header-renderer h1')?.textContent?.includes('Watch later'));
+            
+            let removeItem;
+            if (isWatchLater) {
+              // Original behavior for watch later
+              removeItem = Array.from(menuPopup.querySelectorAll('tp-yt-paper-item, ytd-menu-service-item-renderer'))
+                .find(el => el.textContent && el.textContent.trim().toLowerCase().includes('remove from watch later'));
+            } else {
+              // New behavior for other playlists - find any "Remove from" option
+              removeItem = Array.from(menuPopup.querySelectorAll('tp-yt-paper-item, ytd-menu-service-item-renderer'))
+                .find(el => el.textContent && el.textContent.trim().toLowerCase().includes('remove from'));
+            }
+            
             if (removeItem) {
               removeItem.click();
             } else {
