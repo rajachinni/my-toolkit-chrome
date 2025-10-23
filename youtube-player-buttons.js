@@ -75,35 +75,132 @@ function createSaveButton() {
 
 function triggerSaveToPlaylist() {
   try {
-    // Try multiple selectors for the save button in the new UI
-    const saveButton = document.querySelector('button[title="Save"][aria-label="Save to playlist"]') ||
-                      document.querySelector('button[aria-label="Save to playlist"]') ||
-                      document.querySelector('button[title="Save"]') ||
-                      Array.from(document.querySelectorAll('button.yt-spec-button-shape-next')).find(
-                        btn => btn.title === 'Save' || btn.getAttribute('aria-label') === 'Save to playlist'
-                      ) ||
-                      Array.from(document.querySelectorAll('button')).find(
-                        btn => btn.getAttribute('aria-label')?.includes('Save') || 
-                               btn.title?.includes('Save') ||
-                               btn.textContent?.includes('Save')
-                      );
+    console.log('[YouTube Player Buttons] Looking for Save button...');
     
-    if (saveButton) {
-      saveButton.click();
-      console.log('[YouTube Player Buttons] Clicked Save to playlist button');
+    // First, check if there's a direct Save button in the menu renderer
+    const directSaveButton = document.querySelector('ytd-menu-renderer button[aria-label*="Save"]') ||
+                            document.querySelector('ytd-menu-renderer button[title*="Save"]') ||
+                            Array.from(document.querySelectorAll('ytd-menu-renderer button')).find(
+                              btn => btn.getAttribute('aria-label')?.includes('Save') || 
+                                     btn.title?.includes('Save') ||
+                                     btn.textContent?.includes('Save')
+                            );
+    
+    if (directSaveButton) {
+      console.log('[YouTube Player Buttons] Found direct Save button, clicking it');
+      directSaveButton.click();
+      return;
+    }
+    
+    console.log('[YouTube Player Buttons] No direct Save button found, looking for More actions button');
+    
+    // Look for the "More actions" button (three dots menu) in the video description area
+    const moreActionsButton = document.querySelector('button[aria-label="More actions"]') ||
+                             document.querySelector('yt-button-shape button[aria-label="More actions"]') ||
+                             document.querySelector('.yt-spec-button-shape-next[aria-label="More actions"]') ||
+                             document.querySelector('#top-level-buttons-computed button[aria-label="More actions"]') ||
+                             Array.from(document.querySelectorAll('button')).find(
+                               btn => btn.getAttribute('aria-label') === 'More actions'
+                             );
+    
+    if (moreActionsButton) {
+      moreActionsButton.click();
+      console.log('[YouTube Player Buttons] Clicked More actions button');
+      
+      // Wait for the menu to appear and then click the Save option
+      setTimeout(() => {
+        clickSaveOption();
+      }, 300);
     } else {
-      console.warn('[YouTube Player Buttons] Save to playlist button not found');
-      // Try to find and click the save button in the video description area
-      const descriptionSaveButton = document.querySelector('#top-level-buttons-computed button[aria-label*="Save"]') ||
-                                  document.querySelector('#top-level-buttons-computed button[title*="Save"]');
-      if (descriptionSaveButton) {
-        descriptionSaveButton.click();
-        console.log('[YouTube Player Buttons] Clicked description area save button');
+      console.warn('[YouTube Player Buttons] More actions button not found');
+      // Fallback: try to find any button with three dots icon
+      const threeDotsButton = document.querySelector('button[title=""]') ||
+                             document.querySelector('yt-button-shape button[title=""]') ||
+                             Array.from(document.querySelectorAll('button')).find(
+                               btn => btn.querySelector('svg path[d*="M6 10a2 2 0 100 4"]')
+                             );
+      if (threeDotsButton) {
+        threeDotsButton.click();
+        console.log('[YouTube Player Buttons] Clicked three dots button via fallback');
+        
+        // Wait for the menu to appear and then click the Save option
+        setTimeout(() => {
+          clickSaveOption();
+        }, 300);
       }
     }
     
   } catch (error) {
     console.error('[YouTube Player Buttons] Error triggering save to playlist:', error);
+  }
+}
+
+function clickSaveOption() {
+  try {
+    console.log('[YouTube Player Buttons] Looking for Save option in menu...');
+    
+    // First, let's see what menu items are available
+    const allMenuItems = document.querySelectorAll('ytd-menu-service-item-renderer, tp-yt-paper-item');
+    console.log('[YouTube Player Buttons] Found menu items:', allMenuItems.length);
+    
+    // Look for the Save option with multiple strategies
+    let saveOption = null;
+    
+    // Strategy 1: Look for yt-formatted-string with "Save" text
+    const saveTextElements = Array.from(document.querySelectorAll('yt-formatted-string')).filter(
+      el => el.textContent?.trim() === 'Save'
+    );
+    console.log('[YouTube Player Buttons] Found Save text elements:', saveTextElements.length);
+    
+    if (saveTextElements.length > 0) {
+      saveOption = saveTextElements[0].closest('tp-yt-paper-item') || saveTextElements[0].closest('ytd-menu-service-item-renderer');
+    }
+    
+    // Strategy 2: Look for menu items containing Save
+    if (!saveOption) {
+      saveOption = Array.from(document.querySelectorAll('ytd-menu-service-item-renderer')).find(
+        item => {
+          const textEl = item.querySelector('yt-formatted-string');
+          return textEl && textEl.textContent?.trim() === 'Save';
+        }
+      );
+    }
+    
+    // Strategy 3: Look for any clickable element with Save text
+    if (!saveOption) {
+      saveOption = Array.from(document.querySelectorAll('tp-yt-paper-item')).find(
+        item => {
+          const textEl = item.querySelector('yt-formatted-string');
+          return textEl && textEl.textContent?.trim() === 'Save';
+        }
+      );
+    }
+    
+    // Strategy 4: Look for elements with specific SVG path (bookmark icon)
+    if (!saveOption) {
+      saveOption = Array.from(document.querySelectorAll('ytd-menu-service-item-renderer')).find(
+        item => {
+          const svgPath = item.querySelector('svg path[d*="M19 2H5a2 2 0 00-2 2v16.887"]');
+          return svgPath !== null;
+        }
+      );
+    }
+    
+    console.log('[YouTube Player Buttons] Save option found:', !!saveOption);
+    
+    if (saveOption) {
+      console.log('[YouTube Player Buttons] Clicking Save option:', saveOption);
+      saveOption.click();
+      console.log('[YouTube Player Buttons] Clicked Save option in menu');
+    } else {
+      console.warn('[YouTube Player Buttons] Save option not found in menu');
+      // Log all available menu items for debugging
+      const allTexts = Array.from(document.querySelectorAll('yt-formatted-string')).map(el => el.textContent?.trim());
+      console.log('[YouTube Player Buttons] Available menu options:', allTexts);
+    }
+    
+  } catch (error) {
+    console.error('[YouTube Player Buttons] Error clicking Save option:', error);
   }
 }
 
