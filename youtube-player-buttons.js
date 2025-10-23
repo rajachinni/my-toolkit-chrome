@@ -29,7 +29,7 @@ function createWatchLaterButton() {
   watchLaterBtn.setAttribute('data-tooltip-title', 'Add to Watch Later');
   
   watchLaterBtn.innerHTML = `
-    <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%" style="transform: scale(0.8);">
+    <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%" style="transform: scale(1.5);">
       <use class="ytp-svg-shadow" xlink:href="#ytp-watch-later-icon"></use>
       <path class="ytp-svg-fill" d="M18,8 C12.47,8 8,12.47 8,18 C8,23.52 12.47,28 18,28 C23.52,28 28,23.52 28,18 C28,12.47 23.52,8 18,8 L18,8 Z M16,19.02 L16,12.00 L18,12.00 L18,17.86 L23.10,20.81 L22.10,22.54 L16,19.02 Z" fill="#fff" id="ytp-watch-later-icon"></path>
     </svg>
@@ -55,7 +55,7 @@ function createSaveButton() {
   saveBtn.setAttribute('data-tooltip-title', 'Save to playlist');
   
   saveBtn.innerHTML = `
-    <svg height="100%" version="1.1" viewBox="-4 0 30 30" width="100%" focusable="false" aria-hidden="true" style="pointer-events: none; display: inherit; transform: scale(0.4);">
+    <svg height="100%" version="1.1" viewBox="-4 0 30 30" width="100%" focusable="false" aria-hidden="true" style="pointer-events: none; display: inherit; transform: scale(0.8);">
       <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g transform="translate(-419.000000, -153.000000)" fill="#ffffff">
           <path d="M437,153 L423,153 C420.791,153 419,154.791 419,157 L419,179 C419,181.209 420.791,183 423,183 L430,176 L437,183 C439.209,183 441,181.209 441,179 L441,157 C441,154.791 439.209,153 437,153"></path>
@@ -168,26 +168,13 @@ function addCustomButtons() {
     
     const referenceButton = subtitlesButton || settingsButton || sizeButton || fullscreenButton;
 
-    if (!existingWatchLaterBtn) {
-      const watchLaterBtn = createWatchLaterButton();
-      console.log('[YouTube Player Buttons] Created watch later button');
-      
-      // Insert at the beginning of the controls
-      const firstChild = rightControls.firstChild;
-      if (firstChild) {
-        rightControls.insertBefore(watchLaterBtn, firstChild);
-        console.log('[YouTube Player Buttons] Inserted watch later button at start');
-      } else {
-        rightControls.appendChild(watchLaterBtn);
-        console.log('[YouTube Player Buttons] Appended watch later button');
-      }
-    }
-
-    if (!existingSaveBtn) {
-      const saveBtn = createSaveButton();
+    // Create both buttons first
+    const saveBtn = !existingSaveBtn ? createSaveButton() : null;
+    const watchLaterBtn = !existingWatchLaterBtn ? createWatchLaterButton() : null;
+    
+    // Insert save button first (so it appears on the right)
+    if (saveBtn) {
       console.log('[YouTube Player Buttons] Created save button');
-      
-      // Insert at the beginning of the controls
       const firstChild = rightControls.firstChild;
       if (firstChild) {
         rightControls.insertBefore(saveBtn, firstChild);
@@ -195,6 +182,19 @@ function addCustomButtons() {
       } else {
         rightControls.appendChild(saveBtn);
         console.log('[YouTube Player Buttons] Appended save button');
+      }
+    }
+    
+    // Then insert watch later button (so it appears to the left of save)
+    if (watchLaterBtn) {
+      console.log('[YouTube Player Buttons] Created watch later button');
+      const firstChild = rightControls.firstChild;
+      if (firstChild) {
+        rightControls.insertBefore(watchLaterBtn, firstChild);
+        console.log('[YouTube Player Buttons] Inserted watch later button at start');
+      } else {
+        rightControls.appendChild(watchLaterBtn);
+        console.log('[YouTube Player Buttons] Appended watch later button');
       }
     }
     
@@ -241,21 +241,12 @@ function addCustomButtonsFallback() {
       chromeBottom.appendChild(insertionPoint);
     }
 
-    if (!existingWatchLaterBtn) {
-      const watchLaterBtn = createWatchLaterButton();
-      // Insert at the beginning of the container
-      const firstChild = insertionPoint.firstChild;
-      if (firstChild) {
-        insertionPoint.insertBefore(watchLaterBtn, firstChild);
-      } else {
-        insertionPoint.appendChild(watchLaterBtn);
-      }
-      console.log('[YouTube Player Buttons] Added watch later button via fallback');
-    }
-
-    if (!existingSaveBtn) {
-      const saveBtn = createSaveButton();
-      // Insert at the beginning of the container
+    // Create both buttons first
+    const saveBtn = !existingSaveBtn ? createSaveButton() : null;
+    const watchLaterBtn = !existingWatchLaterBtn ? createWatchLaterButton() : null;
+    
+    // Insert save button first (so it appears on the right)
+    if (saveBtn) {
       const firstChild = insertionPoint.firstChild;
       if (firstChild) {
         insertionPoint.insertBefore(saveBtn, firstChild);
@@ -263,6 +254,17 @@ function addCustomButtonsFallback() {
         insertionPoint.appendChild(saveBtn);
       }
       console.log('[YouTube Player Buttons] Added save button via fallback');
+    }
+    
+    // Then insert watch later button (so it appears to the left of save)
+    if (watchLaterBtn) {
+      const firstChild = insertionPoint.firstChild;
+      if (firstChild) {
+        insertionPoint.insertBefore(watchLaterBtn, firstChild);
+      } else {
+        insertionPoint.appendChild(watchLaterBtn);
+      }
+      console.log('[YouTube Player Buttons] Added watch later button via fallback');
     }
     
     return true;
@@ -345,8 +347,8 @@ style.textContent = `
     display: inline-flex !important;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     border: none;
     background: transparent;
     cursor: pointer;
@@ -360,8 +362,8 @@ style.textContent = `
     border-radius: 4px;
   }
   #ytp-custom-watch-later-btn svg, #ytp-custom-save-btn svg {
-    width: 24px;
-    height: 24px;
+    width: 50px;
+    height: 50px;
     fill: #fff;
   }
   .ytp-custom-buttons-container {
