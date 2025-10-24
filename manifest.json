@@ -12,7 +12,8 @@
                 "youtube-player-buttons.js",
                 "youtube-playlist-buttons.js",
                 "yt-music-playlist-filtering.js",
-                "youtube-topbar-buttons.js"
+                "youtube-topbar-buttons.js",
+                "youtube-homepage-watch-later.js"
             ],
             "run_at": "document_idle"
         },
