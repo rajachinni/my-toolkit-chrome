@@ -169,21 +169,7 @@ class DomainBlockerContent {
                     <p class="blocked-message">
                         This domain has been blocked by your extension.
                     </p>
-                    <div class="blocked-domain">${window.location.hostname}</div>
-                    <a href="javascript:void(0)" class="unblock-button" onclick="openExtensionPopup()">
-                        Manage Blocked Domains
-                    </a>
-                    <div class="extension-info">
-                        To unblock this domain, click the extension icon and remove it from your blocked list.
-                    </div>
                 </div>
-                
-                <script>
-                    function openExtensionPopup() {
-                        // Try to open the extension popup
-                        chrome.runtime.sendMessage({action: 'openPopup'});
-                    }
-                </script>
             </body>
             </html>
         `;
