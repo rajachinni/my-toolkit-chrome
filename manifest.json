@@ -3,6 +3,10 @@
     "name": "My Extension",
     "version": "1.0",
     "description": "Unlocks useful features for Teja Karlapudi",
+    "action": {
+        "default_popup": "popup.html",
+        "default_title": "Domain Blocker"
+    },
     "content_scripts": [
         {
             "matches": [
@@ -27,11 +31,25 @@
                 "you-auto-select-model.js"
             ],
             "run_at": "document_idle"
+        },
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "domain-blocker.js"
+            ],
+            "run_at": "document_start"
         }
     ],
     "host_permissions": [
         "*://www.youtube.com/*",
-        "https://you.com/"
+        "https://you.com/",
+        "<all_urls>"
+    ],
+    "permissions": [
+        "storage",
+        "tabs"
     ],
     "icons": {
         "48": "icon.png"
