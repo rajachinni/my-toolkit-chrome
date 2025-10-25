@@ -79,12 +79,10 @@
         
         .domain-input-container {
             margin-bottom: 15px;
-            display: flex;
-            gap: 10px;
         }
         
         .domain-input {
-            flex: 1;
+            width: 100%;
             padding: 10px;
             border: 2px solid #e1e5e9;
             border-radius: 6px;
@@ -98,27 +96,6 @@
             border-color: #4CAF50;
         }
         
-        .add-button {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: background 0.3s;
-            white-space: nowrap;
-        }
-        
-        .add-button:hover {
-            background: #45a049;
-        }
-        
-        .add-button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
         
         .domain-list {
             margin-top: 15px;
@@ -181,7 +158,6 @@
     <div class="domain-section" id="domainSection">
         <div class="domain-input-container">
             <input type="text" id="domainInput" class="domain-input" placeholder="Enter domain to block">
-            <button id="addButton" class="add-button">Add</button>
         </div>
         
         <div class="domain-list" id="domainList">

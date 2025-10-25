@@ -3,7 +3,6 @@ class DomainBlocker {
     constructor() {
         this.toggle = document.getElementById('toggle');
         this.domainInput = document.getElementById('domainInput');
-        this.addButton = document.getElementById('addButton');
         this.domainList = document.getElementById('domainList');
         this.domainSection = document.getElementById('domainSection');
         
@@ -23,15 +22,11 @@ class DomainBlocker {
         
         // Add event listeners
         this.toggle.addEventListener('click', () => this.toggleFeature());
-        this.addButton.addEventListener('click', () => this.addDomain());
         this.domainInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 this.addDomain();
             }
         });
-        
-        // Update add button state based on input
-        this.domainInput.addEventListener('input', () => this.updateAddButtonState());
     }
     
     async loadSettings() {
@@ -116,7 +111,6 @@ class DomainBlocker {
         // Update UI
         this.renderDomainList(domains);
         this.domainInput.value = '';
-        this.updateAddButtonState();
         
         // Notify content scripts
         this.notifyContentScripts();
@@ -146,7 +140,7 @@ class DomainBlocker {
         this.domainList.innerHTML = domains.map(domain => `
             <div class="domain-item">
                 <span class="domain-text">${this.escapeHtml(domain)}</span>
-                <button class="remove-button" data-domain="${this.escapeHtml(domain)}"> X </button>
+                <button class="remove-button" data-domain="${this.escapeHtml(domain)}"> ❌ </button>
             </div>
         `).join('');
         
@@ -159,10 +153,6 @@ class DomainBlocker {
         });
     }
     
-    updateAddButtonState() {
-        const domain = this.domainInput.value.trim();
-        this.addButton.disabled = !domain;
-    }
     
     isValidDomain(domain) {
         // Basic domain validation
