@@ -3,6 +3,8 @@ class DomainBlockerContent {
     constructor() {
         this.blockedDomains = [];
         this.isEnabled = true;
+        this.overlayId = 'domain-blocker-countdown-overlay';
+        this.countdownInterval = null;
         this.init();
     }
     
@@ -46,6 +48,7 @@ class DomainBlockerContent {
     
     checkCurrentPage() {
         if (!this.isEnabled) {
+            this.removeCountdownOverlay();
             return;
         }
         
@@ -57,7 +60,9 @@ class DomainBlockerContent {
         });
         
         if (isBlocked) {
-            this.showBlockedPage();
+            this.showCountdownOverlay(10);
+        } else {
+            this.removeCountdownOverlay();
         }
     }
     
@@ -69,120 +74,115 @@ class DomainBlockerContent {
         return cleanCurrent === cleanBlocked || cleanCurrent.endsWith('.' + cleanBlocked);
     }
     
-    showBlockedPage() {
-        // Prevent the page from loading further
-        document.documentElement.innerHTML = '';
-        
-        // Create blocked page content
-        const blockedPage = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="utf-8">
-                <title>Domain Blocked</title>
-                <style>
-                    body {
-                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                        margin: 0;
-                        padding: 0;
-                        height: 100vh;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        color: white;
-                    }
-                    
-                    .blocked-container {
-                        text-align: center;
-                        max-width: 500px;
-                        padding: 40px;
-                        background: rgba(255, 255, 255, 0.1);
-                        border-radius: 20px;
-                        backdrop-filter: blur(10px);
-                        border: 1px solid rgba(255, 255, 255, 0.2);
-                        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-                    }
-                    
-                    .blocked-icon {
-                        font-size: 64px;
-                        margin-bottom: 20px;
-                        opacity: 0.8;
-                    }
-                    
-                    .blocked-title {
-                        font-size: 32px;
-                        font-weight: 600;
-                        margin-bottom: 16px;
-                        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-                    }
-                    
-                    .blocked-message {
-                        font-size: 18px;
-                        margin-bottom: 30px;
-                        opacity: 0.9;
-                        line-height: 1.5;
-                    }
-                    
-                    .blocked-domain {
-                        font-family: 'Monaco', 'Menlo', monospace;
-                        background: rgba(255, 255, 255, 0.2);
-                        padding: 8px 16px;
-                        border-radius: 8px;
-                        display: inline-block;
-                        margin: 10px 0;
-                        font-size: 16px;
-                    }
-                    
-                    .unblock-button {
-                        background: rgba(255, 255, 255, 0.2);
-                        color: white;
-                        border: 2px solid rgba(255, 255, 255, 0.3);
-                        padding: 12px 24px;
-                        border-radius: 8px;
-                        cursor: pointer;
-                        font-size: 16px;
-                        font-weight: 500;
-                        transition: all 0.3s ease;
-                        text-decoration: none;
-                        display: inline-block;
-                        margin-top: 20px;
-                    }
-                    
-                    .unblock-button:hover {
-                        background: rgba(255, 255, 255, 0.3);
-                        border-color: rgba(255, 255, 255, 0.5);
-                        transform: translateY(-2px);
-                    }
-                    
-                    .extension-info {
-                        margin-top: 30px;
-                        font-size: 14px;
-                        opacity: 0.7;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="blocked-container">
-                    <div class="blocked-icon">🚫</div>
-                    <h1 class="blocked-title">Domain Blocked</h1>
-                    <p class="blocked-message">
-                        This domain has been blocked by your extension.
-                    </p>
-                </div>
-            </body>
-            </html>
-        `;
-        
-        document.documentElement.innerHTML = blockedPage;
-        
-        // Stop all other scripts from running
-        const scripts = document.querySelectorAll('script');
-        scripts.forEach(script => {
-            if (script.src) {
-                script.remove();
-            }
+    showCountdownOverlay(durationInSeconds) {
+        if (document.getElementById(this.overlayId)) {
+            return;
+        }
+
+        const overlay = document.createElement('div');
+        overlay.id = this.overlayId;
+        overlay.style.position = 'fixed';
+        overlay.style.inset = '0';
+        overlay.style.zIndex = '2147483647';
+        overlay.style.display = 'flex';
+        overlay.style.alignItems = 'center';
+        overlay.style.justifyContent = 'center';
+        overlay.style.background = 'rgba(0, 0, 0, 0.55)';
+        const backdrop = 'blur(36px) saturate(160%)';
+        overlay.style.backdropFilter = backdrop;
+        overlay.style.webkitBackdropFilter = backdrop;
+        overlay.style.color = '#111827';
+        overlay.style.fontFamily = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+
+        const container = document.createElement('div');
+        container.style.textAlign = 'center';
+        container.style.width = 'min(92vw, 580px)';
+        container.style.minHeight = '320px';
+        container.style.boxSizing = 'border-box';
+        container.style.display = 'flex';
+        container.style.flexDirection = 'column';
+        container.style.alignItems = 'center';
+        container.style.justifyContent = 'center';
+        container.style.padding = '44px 40px';
+        container.style.borderRadius = '16px';
+        container.style.background = '#ffffff';
+        container.style.border = '1px solid #e5e7eb';
+        container.style.boxShadow = '0 24px 60px rgba(0, 0, 0, 0.35)';
+
+        const title = document.createElement('h1');
+        title.textContent = 'Domain Blocked';
+        title.style.margin = '0 0 14px 0';
+        title.style.fontSize = '30px';
+        title.style.fontWeight = '600';
+        title.style.color = '#111827';
+
+        const message = document.createElement('p');
+        message.textContent = 'This page will unlock shortly.';
+        message.style.margin = '0 0 20px 0';
+        message.style.fontSize = '17px';
+        message.style.color = '#374151';
+
+        const timer = document.createElement('div');
+        timer.style.fontSize = '64px';
+        timer.style.fontWeight = '700';
+        timer.style.marginBottom = '28px';
+        timer.style.lineHeight = '1';
+        timer.style.color = '#111827';
+
+        const cancelButton = document.createElement('button');
+        cancelButton.textContent = 'Cancel';
+        cancelButton.style.background = 'transparent';
+        cancelButton.style.color = '#111827';
+        cancelButton.style.border = '1px solid #d1d5db';
+        cancelButton.style.borderRadius = '8px';
+        cancelButton.style.padding = '12px 28px';
+        cancelButton.style.fontSize = '15px';
+        cancelButton.style.fontWeight = '600';
+        cancelButton.style.cursor = 'pointer';
+        cancelButton.style.transition = 'background 0.2s ease, border-color 0.2s ease, color 0.2s ease';
+        cancelButton.addEventListener('mouseenter', () => {
+            cancelButton.style.background = '#f9fafb';
+            cancelButton.style.borderColor = '#9ca3af';
         });
+        cancelButton.addEventListener('mouseleave', () => {
+            cancelButton.style.background = 'transparent';
+            cancelButton.style.borderColor = '#d1d5db';
+        });
+        cancelButton.addEventListener('click', () => {
+            chrome.runtime.sendMessage({ action: 'closeCurrentTab' });
+        });
+
+        let secondsLeft = durationInSeconds;
+        timer.textContent = String(secondsLeft);
+
+        container.appendChild(title);
+        container.appendChild(message);
+        container.appendChild(timer);
+        container.appendChild(cancelButton);
+        overlay.appendChild(container);
+        document.documentElement.appendChild(overlay);
+
+        this.countdownInterval = window.setInterval(() => {
+            secondsLeft -= 1;
+            if (secondsLeft <= 0) {
+                this.removeCountdownOverlay();
+                return;
+            }
+
+            timer.textContent = String(secondsLeft);
+        }, 1000);
+    }
+
+    removeCountdownOverlay() {
+        if (this.countdownInterval) {
+            window.clearInterval(this.countdownInterval);
+            this.countdownInterval = null;
+        }
+
+        const overlay = document.getElementById(this.overlayId);
+        if (overlay) {
+            overlay.remove();
+        }
     }
 }
 

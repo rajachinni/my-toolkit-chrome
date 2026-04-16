@@ -53,7 +53,7 @@
         "contextMenus"
     ],
     "background": {
-        "service_worker": "close-other-tabs-context-menu.js"
+        "service_worker": "custom-context-menu-actions.js"
     },
     "icons": {
         "48": "icon.png"
