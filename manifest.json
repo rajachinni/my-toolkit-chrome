@@ -49,8 +49,12 @@
     ],
     "permissions": [
         "storage",
-        "tabs"
+        "tabs",
+        "contextMenus"
     ],
+    "background": {
+        "service_worker": "close-other-tabs-context-menu.js"
+    },
     "icons": {
         "48": "icon.png"
     }
