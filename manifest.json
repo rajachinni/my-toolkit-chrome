@@ -32,10 +32,44 @@
                 "domain-blocker.js"
             ],
             "run_at": "document_start"
+        },
+        {
+            "matches": [
+                "*://x.com/*",
+                "*://www.x.com/*"
+            ],
+            "js": [
+                "text-selection-popup.js"
+            ],
+            "run_at": "document_idle"
+        },
+        {
+            "matches": [
+                "*://claude.ai/*",
+                "*://claude.com/*"
+            ],
+            "js": [
+                "claude-input.js"
+            ],
+            "run_at": "document_idle"
+        },
+        {
+            "matches": [
+                "*://chatgpt.com/*",
+                "*://chat.openai.com/*"
+            ],
+            "js": [
+                "chatgpt-input.js"
+            ],
+            "run_at": "document_idle"
         }
     ],
     "host_permissions": [
         "*://www.youtube.com/*",
+        "*://claude.ai/*",
+        "*://claude.com/*",
+        "*://chatgpt.com/*",
+        "*://chat.openai.com/*",
         "<all_urls>"
     ],
     "permissions": [

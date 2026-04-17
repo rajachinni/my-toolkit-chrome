@@ -91,5 +91,15 @@ chrome.runtime.onMessage.addListener((message, sender) => {
         closeOtherTabs(sender.tab?.id).catch(() => {
             // Ignore failures from stale tab state.
         });
+        return;
+    }
+
+    if (message?.action === 'openClaude') {
+        chrome.tabs.create({ url: 'https://claude.ai/new' });
+        return;
+    }
+
+    if (message?.action === 'openChatGPT') {
+        chrome.tabs.create({ url: 'https://chatgpt.com/' });
     }
 });
