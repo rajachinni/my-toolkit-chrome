@@ -110,7 +110,7 @@ class DomainBlockerContent {
         container.style.boxShadow = '0 24px 60px rgba(0, 0, 0, 0.35)';
 
         const title = document.createElement('h1');
-        title.textContent = 'Domain Blocked';
+        title.textContent = 'Website Blocked';
         title.style.margin = '0 0 14px 0';
         title.style.fontSize = '30px';
         title.style.fontWeight = '600';

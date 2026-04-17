@@ -22,18 +22,11 @@
             margin: 0;
         }
         
-        .toggle-section {
-            background: white;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
         .toggle-container {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            margin-bottom: 12px;
         }
         
         .toggle-label {
@@ -75,10 +68,23 @@
             border-radius: 8px;
             padding: 15px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 15px;
+        }
+
+        .setting-section {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 15px;
         }
         
         .domain-input-container {
             margin-bottom: 15px;
+        }
+
+        .domain-controls {
+            transition: opacity 0.2s;
         }
         
         .domain-input {
@@ -94,6 +100,55 @@
         .domain-input:focus {
             outline: none;
             border-color: #4CAF50;
+        }
+
+        .setting-title {
+            margin: 0 0 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .setting-help {
+            margin: 0 0 10px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .setting-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .setting-row .domain-input {
+            margin: 0;
+        }
+
+        .save-button {
+            border: none;
+            border-radius: 6px;
+            background: #4CAF50;
+            color: white;
+            padding: 0 12px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .save-button:hover {
+            background: #45a049;
+        }
+
+        .setting-feedback {
+            margin-top: 8px;
+            min-height: 16px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .setting-feedback.error {
+            color: #cc0000;
         }
         
         
@@ -145,23 +200,33 @@
     <div class="header">
         <h1>My Extension</h1>
     </div>
-    
-    <div class="toggle-section">
+
+    <div class="setting-section">
+        <h2 class="setting-title">Custom New Tab URL</h2>
+        <p class="setting-help">Choose the URL that replaces Chrome new tab.</p>
+        <div class="setting-row">
+            <input type="text" id="customNewTabUrlInput" class="domain-input" placeholder="https://example.com">
+            <button id="saveCustomNewTabUrlButton" class="save-button">Save</button>
+        </div>
+        <div id="customNewTabUrlFeedback" class="setting-feedback"></div>
+    </div>
+
+    <div class="domain-section" id="domainSection">
         <div class="toggle-container">
-            <span class="toggle-label">Enable Domain Blocking</span>
+            <span class="toggle-label">Domain Blocking</span>
             <div class="toggle" id="toggle">
                 <div class="toggle-slider"></div>
             </div>
         </div>
-    </div>
-    
-    <div class="domain-section" id="domainSection">
-        <div class="domain-input-container">
-            <input type="text" id="domainInput" class="domain-input" placeholder="Enter domain to block">
-        </div>
-        
-        <div class="domain-list" id="domainList">
-            <div class="empty-state">No domains blocked yet</div>
+
+        <div class="domain-controls" id="domainControls">
+            <div class="domain-input-container">
+                <input type="text" id="domainInput" class="domain-input" placeholder="Enter domain to block">
+            </div>
+
+            <div class="domain-list" id="domainList">
+                <div class="empty-state">No domains blocked yet</div>
+            </div>
         </div>
     </div>
     

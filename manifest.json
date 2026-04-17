@@ -7,6 +7,9 @@
         "default_popup": "popup.html",
         "default_title": "Domain Blocker"
     },
+    "chrome_url_overrides": {
+        "newtab": "newtab.html"
+    },
     "content_scripts": [
         {
             "matches": [
@@ -23,17 +26,6 @@
         },
         {
             "matches": [
-                "https://you.com/",
-                "https://you.com/*"
-            ],
-            "js": [
-                "you-web-search-disabler.js",
-                "you-auto-select-model.js"
-            ],
-            "run_at": "document_idle"
-        },
-        {
-            "matches": [
                 "<all_urls>"
             ],
             "js": [
@@ -44,7 +36,6 @@
     ],
     "host_permissions": [
         "*://www.youtube.com/*",
-        "https://you.com/",
         "<all_urls>"
     ],
     "permissions": [
@@ -54,6 +45,15 @@
     ],
     "background": {
         "service_worker": "custom-context-menu-actions.js"
+    },
+    "commands": {
+        "close-other-tabs-shortcut": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+Y",
+                "mac": "Command+Shift+Y"
+            },
+            "description": "Close all tabs except current tab"
+        }
     },
     "icons": {
         "48": "icon.png"
