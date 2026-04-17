@@ -10,7 +10,10 @@ async function closeOtherTabs(activeTabId) {
 
     const allTabs = await chrome.tabs.query({});
     const tabsToClose = allTabs
-        .filter((openTab) => openTab.id && openTab.id !== activeTabId)
+        .filter(
+            (openTab) =>
+                openTab.id && openTab.id !== activeTabId && !openTab.pinned
+        )
         .map((openTab) => openTab.id);
 
     if (tabsToClose.length > 0) {
@@ -48,15 +51,6 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     }
 
     if (info.menuItemId === MANAGE_EXTENSIONS_MENU_ID) {
-        try {
-            if (tab?.id) {
-                await chrome.tabs.update(tab.id, { url: 'chrome://extensions' });
-                return;
-            }
-        } catch (error) {
-            // Fall back to opening in a new tab when current-tab navigation is blocked.
-        }
-
         await chrome.tabs.create({ url: 'chrome://extensions' });
         return;
     }

@@ -5,7 +5,7 @@
     const ICON_SIZE = 22;
     const ICON_GAP = 6;
     const HOST_WIDTH = ICON_SIZE * 2 + ICON_GAP;
-    const VERTICAL_OFFSET = 25;
+    const TOP_NUDGE_UP = 50;
 
     let hostEl = null;
     let activeInput = null;
@@ -24,6 +24,22 @@
 
     function isEditableEl(el) {
         return el && typeof el.matches === 'function' && el.matches(EDITABLE_SELECTOR);
+    }
+
+    function isTwitterHost() {
+        const h = typeof location !== 'undefined' ? location.hostname : '';
+        return h === 'x.com' || h === 'www.x.com' || h === 'twitter.com' || h === 'www.twitter.com';
+    }
+
+    function getPositionRectForInput(inputEl) {
+        if (isTwitterHost()) {
+            const anchor = inputEl.closest('[data-testid^="tweetTextarea"]');
+            if (anchor) {
+                const r = anchor.getBoundingClientRect();
+                if (r.width > 2 && r.height > 2) return r;
+            }
+        }
+        return inputEl.getBoundingClientRect();
     }
 
     function getTextFromInput(el) {
@@ -117,10 +133,11 @@
 
     function positionHost(inputEl) {
         if (!hostEl) return;
-        const rect = inputEl.getBoundingClientRect();
-        const margin = 4;
+        const rect = getPositionRectForInput(inputEl);
+        const margin = 6;
         hostEl.style.left = `${Math.round(rect.right - HOST_WIDTH - margin)}px`;
-        hostEl.style.top = `${Math.round(rect.bottom - ICON_SIZE - margin - VERTICAL_OFFSET)}px`;
+        const top = Math.max(0, Math.round(rect.top + margin - TOP_NUDGE_UP));
+        hostEl.style.top = `${top}px`;
     }
 
     function showIcon(inputEl) {

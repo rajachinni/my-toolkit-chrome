@@ -86,7 +86,7 @@
                 "default": "Ctrl+Shift+Y",
                 "mac": "Command+Shift+Y"
             },
-            "description": "Close all tabs except current tab"
+            "description": "Close all tabs except the current tab and pinned tabs"
         }
     },
     "icons": {
