@@ -31,6 +31,17 @@
         return h === 'x.com' || h === 'www.x.com' || h === 'twitter.com' || h === 'www.twitter.com';
     }
 
+    function isAiButtonsPage() {
+        const h = location.hostname;
+        if (h !== 'x.com' && h !== 'www.x.com') return false;
+        const p = location.pathname;
+        return p === '/home' || p === '/compose/post';
+    }
+
+    function onNavigationMaybeHideAiButtons() {
+        if (!isAiButtonsPage()) hideIcon();
+    }
+
     function getPositionRectForInput(inputEl) {
         if (isTwitterHost()) {
             const anchor = inputEl.closest('[data-testid^="tweetTextarea"]');
@@ -141,6 +152,7 @@
     }
 
     function showIcon(inputEl) {
+        if (!isAiButtonsPage()) return;
         clearTimeout(hideTimeout);
         if (!hostEl) hostEl = buildHost();
         activeInput = inputEl;
@@ -174,6 +186,10 @@
     }
 
     document.addEventListener('focusin', (e) => {
+        if (!isAiButtonsPage()) {
+            hideIcon();
+            return;
+        }
         if (isEditableEl(e.target)) {
             showIcon(e.target);
         }
@@ -184,4 +200,18 @@
             scheduleHide();
         }
     });
+
+    window.addEventListener('popstate', onNavigationMaybeHideAiButtons);
+    const origPushState = history.pushState;
+    const origReplaceState = history.replaceState;
+    history.pushState = function (...args) {
+        const r = origPushState.apply(this, args);
+        onNavigationMaybeHideAiButtons();
+        return r;
+    };
+    history.replaceState = function (...args) {
+        const r = origReplaceState.apply(this, args);
+        onNavigationMaybeHideAiButtons();
+        return r;
+    };
 }());
