@@ -6,12 +6,6 @@ class DomainBlocker {
         this.domainList = document.getElementById('domainList');
         this.domainSection = document.getElementById('domainSection');
         this.domainControls = document.getElementById('domainControls');
-        this.customNewTabUrlInput = document.getElementById('customNewTabUrlInput');
-        this.saveCustomNewTabUrlButton = document.getElementById('saveCustomNewTabUrlButton');
-        this.customNewTabUrlFeedback = document.getElementById('customNewTabUrlFeedback');
-        this.customNewTabUrlStorageKey = 'customNewTabUrl';
-        this.defaultCustomNewTabUrl = 'https://www.google.com/';
-        
         this.init();
     }
     
@@ -34,13 +28,6 @@ class DomainBlocker {
             }
         });
 
-        this.customNewTabUrlInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                this.saveCustomNewTabUrl();
-            }
-        });
-        this.saveCustomNewTabUrlButton.addEventListener('click', () => this.saveCustomNewTabUrl());
-        await this.loadCustomNewTabUrl();
     }
     
     async loadSettings() {
@@ -79,60 +66,6 @@ class DomainBlocker {
         });
     }
 
-    normalizeCustomNewTabUrl(rawUrl) {
-        if (typeof rawUrl !== 'string') {
-            return null;
-        }
-
-        const trimmedUrl = rawUrl.trim();
-        if (!trimmedUrl) {
-            return null;
-        }
-
-        const hasScheme = /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(trimmedUrl);
-        const candidateUrl = hasScheme ? trimmedUrl : `https://${trimmedUrl}`;
-
-        try {
-            const parsedUrl = new URL(candidateUrl);
-            if (parsedUrl.protocol === 'chrome:' && parsedUrl.hostname === 'newtab') {
-                return null;
-            }
-
-            return parsedUrl.toString();
-        } catch (error) {
-            return null;
-        }
-    }
-
-    async loadCustomNewTabUrl() {
-        const result = await new Promise((resolve) => {
-            chrome.storage.sync.get([this.customNewTabUrlStorageKey], resolve);
-        });
-
-        const savedUrl = result[this.customNewTabUrlStorageKey];
-        this.customNewTabUrlInput.value = savedUrl || this.defaultCustomNewTabUrl;
-    }
-
-    async saveCustomNewTabUrl() {
-        const normalizedUrl = this.normalizeCustomNewTabUrl(this.customNewTabUrlInput.value);
-        if (!normalizedUrl) {
-            this.setCustomUrlFeedback('Enter a valid URL (not chrome://newtab).', true);
-            return;
-        }
-
-        await new Promise((resolve) => {
-            chrome.storage.sync.set({ [this.customNewTabUrlStorageKey]: normalizedUrl }, resolve);
-        });
-
-        this.customNewTabUrlInput.value = normalizedUrl;
-        this.setCustomUrlFeedback('Custom URL saved.', false);
-    }
-
-    setCustomUrlFeedback(message, isError) {
-        this.customNewTabUrlFeedback.textContent = message;
-        this.customNewTabUrlFeedback.classList.toggle('error', isError);
-    }
-    
     async toggleFeature() {
         const isEnabled = this.toggle.classList.contains('active');
         const newState = !isEnabled;

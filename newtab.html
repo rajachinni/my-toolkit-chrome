@@ -1,18 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="color-scheme" content="dark">
-    <title>New Tab Redirect</title>
-    <style>
-        html, body {
-            margin: 0;
-            min-height: 100%;
-            background: #454545;
-        }
-    </style>
+    <title>New Tab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="newtab.css">
 </head>
 <body>
-    <script src="newtab-redirect.js"></script>
+    <div class="container">
+        <div class="search-wrapper">
+            <div class="search-box">
+                <textarea
+                    id="searchInput"
+                    class="search-input"
+                    placeholder="Search anything..."
+                    rows="1"
+                    autocomplete="off"
+                    spellcheck="false"
+                ></textarea>
+            </div>
+
+            <div class="engines" id="engineButtons"></div>
+        </div>
+    </div>
+
+    <script src="newtab.js"></script>
 </body>
 </html>
