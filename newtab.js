@@ -26,16 +26,25 @@ function applyEngineTheme(engine) {
     document.documentElement.style.setProperty('--engine-color', engine.color);
 }
 
+function updateEnginePrefix(engine) {
+    const prefix = document.getElementById('enginePrefix');
+    if (!prefix) {
+        return;
+    }
+
+    const initial = (engine?.name || '?').trim().charAt(0).toUpperCase() || '?';
+    prefix.textContent = initial;
+    prefix.title = engine?.name || '';
+}
+
 function renderEngines() {
     const container = document.getElementById('engineButtons');
     container.innerHTML = VISIBLE_ENGINES.map(engine => `
         <button
-            class="engine-btn${engine.id === activeEngineId ? ' active' : ''}"
+            class="engine-btn"
             data-engine="${engine.id}"
-            style="--btn-color: ${engine.color}"
             title="${engine.name}"
         >
-            <span class="engine-dot"></span>
             ${engine.name}
         </button>
     `).join('');
@@ -58,6 +67,7 @@ function setActiveEngine(id, persist = true) {
     activeEngineId = nextEngine.id;
     renderEngines();
     applyEngineTheme(getActiveEngine());
+    updateEnginePrefix(getActiveEngine());
 
     if (persist) {
         chrome.storage.sync.set({ [STORAGE_KEY]: activeEngineId });
@@ -130,6 +140,7 @@ async function init() {
 
     renderEngines();
     applyEngineTheme(getActiveEngine());
+    updateEnginePrefix(getActiveEngine());
 
     const input = document.getElementById('searchInput');
 
