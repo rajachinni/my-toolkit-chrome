@@ -66,7 +66,7 @@ html, body {
     --search-font: 20px;
     --search-max-lines: 17;
     background: var(--surface);
-    border: 1px solid color-mix(in srgb, var(--engine-color, var(--accent-warm)) 24%, var(--border-subtle));
+    border: 1px solid var(--border-subtle);
     border-radius: 12px;
     padding: 12px 16px;
     transition: border-color 0.2s ease, background 0.2s ease;
@@ -77,7 +77,7 @@ html, body {
 }
 
 .search-box:focus-within {
-    border-color: color-mix(in srgb, var(--engine-color, var(--accent-warm)) 62%, var(--border-strong));
+    border-color: color-mix(in srgb, #ffffff 45%, var(--border-strong));
 }
 
 .engine-prefix {
