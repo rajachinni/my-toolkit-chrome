@@ -1,6 +1,4 @@
-const CUSTOM_CONTEXT_MENU_PARENT_ID = 'custom-context-menu-actions';
 const CLOSE_OTHER_TABS_MENU_ID = 'close-other-tabs';
-const MANAGE_EXTENSIONS_MENU_ID = 'manage-extensions';
 const CLOSE_OTHER_TABS_COMMAND_ID = 'close-other-tabs-shortcut';
 
 async function closeOtherTabs(activeTabId) {
@@ -23,22 +21,8 @@ async function closeOtherTabs(activeTabId) {
 
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
-        id: CUSTOM_CONTEXT_MENU_PARENT_ID,
-        title: 'My Extension',
-        contexts: ['all']
-    });
-
-    chrome.contextMenus.create({
         id: CLOSE_OTHER_TABS_MENU_ID,
-        parentId: CUSTOM_CONTEXT_MENU_PARENT_ID,
         title: 'Close Other Tabs',
-        contexts: ['all']
-    });
-
-    chrome.contextMenus.create({
-        id: MANAGE_EXTENSIONS_MENU_ID,
-        parentId: CUSTOM_CONTEXT_MENU_PARENT_ID,
-        title: 'Manage Extensions',
         contexts: ['all']
     });
 });
@@ -50,10 +34,6 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
         return;
     }
 
-    if (info.menuItemId === MANAGE_EXTENSIONS_MENU_ID) {
-        await chrome.tabs.create({ url: 'chrome://extensions' });
-        return;
-    }
 });
 
 chrome.commands.onCommand.addListener(async (command) => {
