@@ -55,6 +55,15 @@
         },
         {
             "matches": [
+                "*://gemini.google.com/*"
+            ],
+            "js": [
+                "gemini-input.js"
+            ],
+            "run_at": "document_idle"
+        },
+        {
+            "matches": [
                 "*://chatgpt.com/*",
                 "*://chat.openai.com/*"
             ],
@@ -68,6 +77,7 @@
         "*://www.youtube.com/*",
         "*://claude.ai/*",
         "*://claude.com/*",
+        "*://gemini.google.com/*",
         "*://chatgpt.com/*",
         "*://chat.openai.com/*",
         "<all_urls>"

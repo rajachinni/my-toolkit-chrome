@@ -1,5 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&display=swap');
 
+:root {
+    --bg-base: #181818;
+    --bg-overlay: #1d1d1d;
+    --surface: #2a2a2a;
+    --surface-muted: #232323;
+    --surface-hover: #313131;
+    --surface-active: #373737;
+    --border-subtle: #343434;
+    --border-strong: #3e3e3e;
+    --text-primary: #d0cec8;
+    --text-secondary: #b3b1ab;
+    --text-muted: #8d8a84;
+    --text-faint: #706d68;
+    --accent-warm: #d27a57;
+}
+
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -9,8 +25,9 @@
 html, body {
     width: 100%;
     height: 100%;
-    background: #18181a;
-    color: #e6e6e6;
+    background:
+        radial-gradient(120% 120% at 50% 8%, var(--bg-overlay) 0%, var(--bg-base) 58%);
+    color: var(--text-primary);
     font-family: 'Manrope', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow: hidden;
@@ -38,7 +55,7 @@ html, body {
 .greeting-text {
     font-size: clamp(32px, 4.6vw, 48px);
     font-weight: 500;
-    color: #c6c6ca;
+    color: var(--text-primary);
     margin-bottom: 28px;
     line-height: 1.1;
     text-align: center;
@@ -48,8 +65,8 @@ html, body {
     --search-line: 1.45;
     --search-font: 20px;
     --search-max-lines: 17;
-    background: #1e1e21;
-    border: 1px solid #2e2e32;
+    background: var(--surface);
+    border: 1px solid color-mix(in srgb, var(--engine-color, var(--accent-warm)) 24%, var(--border-subtle));
     border-radius: 12px;
     padding: 12px 16px;
     transition: border-color 0.2s ease, background 0.2s ease;
@@ -59,6 +76,10 @@ html, body {
     gap: 10px;
 }
 
+.search-box:focus-within {
+    border-color: color-mix(in srgb, var(--engine-color, var(--accent-warm)) 62%, var(--border-strong));
+}
+
 .engine-prefix {
     display: flex;
     align-items: center;
@@ -66,7 +87,7 @@ html, body {
     flex-shrink: 0;
     align-self: flex-start;
     user-select: none;
-    color: #96969c;
+    color: var(--text-muted);
     line-height: 0;
     font-size: var(--search-font);
     height: calc(var(--search-line) * 1em);
@@ -97,7 +118,7 @@ html, body {
     flex-shrink: 0;
     align-self: stretch;
     min-height: calc(var(--search-line) * var(--search-font));
-    background: #303035;
+    background: var(--border-strong);
     opacity: 0.95;
 }
 
@@ -113,27 +134,27 @@ html, body {
     font-family: 'Manrope', system-ui, sans-serif;
     font-size: var(--search-font);
     font-weight: 400;
-    color: #e8e8e8;
+    color: var(--text-primary);
     line-height: var(--search-line);
     overflow-x: hidden;
     overflow-y: auto;
     max-height: calc(var(--search-max-lines) * var(--search-line) * 1em);
     min-height: calc(var(--search-line) * 1em);
     display: block;
-    caret-color: var(--engine-color, #4285F4);
+    caret-color: var(--engine-color, var(--accent-warm));
     transition: color 0.2s ease, caret-color 0.2s ease;
 }
 
 .search-input::placeholder {
-    color: #5a5a62;
+    color: var(--text-faint);
 }
 
 .bookmarks-results {
     display: none;
     flex-direction: column;
     margin-top: 8px;
-    background: #1e1e21;
-    border: 1px solid #2e2e32;
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
     border-radius: 12px;
     overflow: hidden;
 }
@@ -144,13 +165,13 @@ html, body {
 
 .bookmark-item {
     padding: 12px 16px;
-    color: #e8e8e8;
+    color: var(--text-primary);
     text-decoration: none;
     font-size: 15px;
     display: flex;
     flex-direction: column;
     gap: 4px;
-    border-bottom: 1px solid #2e2e32;
+    border-bottom: 1px solid var(--border-subtle);
     transition: background 0.15s;
     cursor: pointer;
 }
@@ -161,7 +182,7 @@ html, body {
 
 .bookmark-item:hover,
 .bookmark-item.selected {
-    background: #2a2a2e;
+    background: var(--surface-hover);
 }
 
 .bookmark-title {
@@ -173,7 +194,7 @@ html, body {
 
 .bookmark-url {
     font-size: 13px;
-    color: #8e8e95;
+    color: var(--text-muted);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -194,15 +215,15 @@ html, body {
     align-items: stretch;
     min-height: 48px;
     border-radius: 14px;
-    background: #1e1e21;
-    border: 1px solid #2a2a2e;
+    background: var(--surface-muted);
+    border: 1px solid var(--border-subtle);
     overflow: hidden;
     transition: background 0.15s, border-color 0.15s;
 }
 
 .engine-cell:hover {
-    background: #252528;
-    border-color: #36363a;
+    background: var(--surface-hover);
+    border-color: var(--border-strong);
 }
 
 .engine-btn {
@@ -216,7 +237,7 @@ html, body {
     border: none;
     border-radius: 0;
     background: transparent;
-    color: #8e8e95;
+    color: var(--text-secondary);
     font-family: 'Manrope', sans-serif;
     font-size: 14px;
     font-weight: 600;
@@ -235,17 +256,17 @@ html, body {
     margin: 0;
     padding: 0;
     border: none;
-    border-left: 1px solid #2e2e32;
+    border-left: 1px solid var(--border-subtle);
     background: transparent;
-    color: #6a6a72;
+    color: var(--text-faint);
     text-decoration: none;
     cursor: pointer;
     transition: color 0.15s, background 0.15s;
 }
 
 .engine-external:hover {
-    color: #b4b4bc;
-    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-secondary);
+    background: var(--surface-active);
 }
 
 .engine-external-icon {
@@ -263,6 +284,5 @@ html, body {
 }
 
 .engine-cell:hover .engine-btn {
-    color: #c4c4ca;
+    color: var(--text-primary);
 }
-
