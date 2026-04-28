@@ -58,16 +58,20 @@ html, body {
     color: var(--text-primary);
     margin-bottom: 28px;
     line-height: 1.1;
+    min-height: 1.1em;
     text-align: center;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .search-box {
     --search-line: 1.45;
     --search-font: 20px;
     --search-max-lines: 17;
+    --engine-prefix-size: 20px;
     background: var(--surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: 12px;
+    border: 1px solid color-mix(in srgb, var(--surface) 72%, var(--border-subtle));
+    border-radius: 28px;
     padding: 12px 16px;
     transition: border-color 0.2s ease, background 0.2s ease;
     position: relative;
@@ -77,7 +81,7 @@ html, body {
 }
 
 .search-box:focus-within {
-    border-color: color-mix(in srgb, #ffffff 45%, var(--border-strong));
+    border-color: color-mix(in srgb, #ffffff 18%, var(--border-subtle));
 }
 
 .engine-prefix {
@@ -85,6 +89,8 @@ html, body {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    width: var(--engine-prefix-size);
+    min-width: var(--engine-prefix-size);
     align-self: flex-start;
     user-select: none;
     color: var(--text-muted);

@@ -276,10 +276,12 @@ function getGreeting() {
         greetings.push('Good morning, Teja!');
     } else if (hour >= 12 && hour < 18) {
         greetings.push('Good afternoon, Teja!');
-    } else if (hour >= 18 && hour < 22) {
+    } else if (hour >= 18 && hour < 20) {
         greetings.push('Good evening, Teja!', 'Evening, Teja!');
-    } else {
+    } else if (hour >= 23) {
         greetings.push('Hello, night owl!');
+    } else {
+        greetings.push('Good night, Teja!');
     }
 
     if (day === 1) greetings.push('Happy Monday, Teja!');
@@ -311,9 +313,8 @@ async function loadSavedEngine() {
 }
 
 async function init() {
-    await loadSavedEngine();
-
     renderGreeting();
+    await loadSavedEngine();
     renderEngines();
     applyEngineTheme(getActiveEngine());
     updateEnginePrefix(getActiveEngine());
