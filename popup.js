@@ -6,7 +6,6 @@ class DomainBlocker {
         this.domainList = document.getElementById('domainList');
         this.domainSection = document.getElementById('domainSection');
         this.domainControls = document.getElementById('domainControls');
-        this.manageExtensionsButton = document.getElementById('manageExtensionsButton');
         this.init();
     }
     
@@ -27,9 +26,6 @@ class DomainBlocker {
             if (e.key === 'Enter') {
                 this.addDomain();
             }
-        });
-        this.manageExtensionsButton?.addEventListener('click', () => {
-            chrome.tabs.create({ url: 'chrome://extensions' });
         });
 
     }
