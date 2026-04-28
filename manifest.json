@@ -75,7 +75,8 @@
     "permissions": [
         "storage",
         "tabs",
-        "contextMenus"
+        "contextMenus",
+        "bookmarks"
     ],
     "background": {
         "service_worker": "custom-context-menu-actions.js"
