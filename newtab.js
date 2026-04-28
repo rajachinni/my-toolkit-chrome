@@ -284,9 +284,10 @@ function getGreeting() {
         greetings.push('Good night, Teja!');
     }
 
-    if (day === 1) greetings.push('Happy Monday, Teja!');
+    if (day === 1 && hour < 16) greetings.push('Happy Monday, Teja!');
     else if (day === 2) greetings.push('Happy Tuesday, Teja!');
-    else if (day === 5) greetings.push('Happy Friday, Teja!');
+    else if (day === 5 && hour < 16) greetings.push('Happy Friday, Teja!');
+    else if (day === 5 && hour >= 16) greetings.push('Happy Weekend, Teja!');
     else if (day === 0 || day === 6) greetings.push('Happy Weekend, Teja!');
 
     return greetings[Math.floor(Math.random() * greetings.length)];
@@ -320,6 +321,24 @@ async function init() {
     updateEnginePrefix(getActiveEngine());
 
     const input = document.getElementById('searchInput');
+    const closeOtherTabsButton = document.getElementById('closeOtherTabsButton');
+    const manageExtensionsButton = document.getElementById('manageExtensionsButton');
+
+    if (closeOtherTabsButton) {
+        closeOtherTabsButton.addEventListener('click', async () => {
+            try {
+                await chrome.runtime.sendMessage({ action: 'closeOtherTabs' });
+            } catch {
+                // Ignore failures if the background worker is unavailable.
+            }
+        });
+    }
+
+    if (manageExtensionsButton) {
+        manageExtensionsButton.addEventListener('click', () => {
+            chrome.tabs.update({ url: 'chrome://extensions' });
+        });
+    }
 
     input.addEventListener('input', () => {
         autoGrow(input);
