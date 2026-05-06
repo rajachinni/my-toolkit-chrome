@@ -173,6 +173,12 @@ function renderEngines() {
                 setActiveEngine(id);
                 const input = document.getElementById('searchInput');
                 if (input) {
+                    const query = input.value.trim();
+                    if (query) {
+                        const selectedEngine = ENGINES.find(engine => engine.id === id);
+                        performSearch(query, selectedEngine);
+                        return;
+                    }
                     input.focus({ preventScroll: true });
                 }
             }
@@ -234,15 +240,15 @@ function shouldAutoSearchOnAlias(rawQuery) {
     return Boolean(parseAliasedQuery(rawQuery));
 }
 
-async function performSearch(rawQuery) {
+async function performSearch(rawQuery, forcedEngine = null) {
     const trimmedQuery = rawQuery.trim();
     if (!trimmedQuery) {
         return;
     }
 
-    const aliased = parseAliasedQuery(trimmedQuery);
+    const aliased = forcedEngine ? null : parseAliasedQuery(trimmedQuery);
     const query = aliased ? aliased.query : trimmedQuery;
-    const engine = aliased ? aliased.engine : getActiveEngine();
+    const engine = forcedEngine || (aliased ? aliased.engine : getActiveEngine());
 
     const pendingHandler = ENGINE_PENDING_QUERY_HANDLERS[engine.id];
     if (pendingHandler) {
