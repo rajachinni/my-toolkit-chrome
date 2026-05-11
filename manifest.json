@@ -1,11 +1,11 @@
 {
     "manifest_version": 3,
-    "name": "My Extension",
+    "name": "Toolkit",
     "version": "1.0",
     "description": "Unlocks useful features for Teja Karlapudi",
     "action": {
         "default_popup": "popup.html",
-        "default_title": "Domain Blocker"
+        "default_title": "Toolkit"
     },
     "chrome_url_overrides": {
         "newtab": "newtab.html"
@@ -17,6 +17,7 @@
             ],
             "js": [
                 "youtube-player-buttons.js",
+                "youtube-watch-t-keypress.js",
                 "youtube-playlist-buttons.js",
                 "yt-music-playlist-filtering.js",
                 "youtube-topbar-buttons.js",
