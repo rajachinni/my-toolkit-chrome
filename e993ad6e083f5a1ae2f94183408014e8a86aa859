@@ -1,0 +1,33 @@
+manifest.json
+  b47825dd93b30430 90-91
+newtab.css
+  b47825dd93b30430 139,326-479
+popup.html
+  b47825dd93b30430 243-252
+popup.js
+  b47825dd93b30430 9-14,29-31,39-50,201-246
+newtab.js
+  b47825dd93b30430 21,91,271,275,285,287,289,293,296-300,310,313-393,408-428,430,432-439,447,465-490
+newtab.html
+  b47825dd93b30430 15-19,32-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.23",
+  "base_commit_sha": "e993ad6e083f5a1ae2f94183408014e8a86aa859",
+  "prompts": {
+    "b47825dd93b30430": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "600e9f91-2341-45ff-a023-29bb0ca95a2a",
+        "model": "claude-sonnet-4"
+      },
+      "human_author": "Raja Chinni <raja.chinni@gdn-commerce.com>",
+      "messages": [],
+      "total_additions": 408,
+      "total_deletions": 22,
+      "accepted_lines": 400,
+      "overriden_lines": 1
+    }
+  }
+}
