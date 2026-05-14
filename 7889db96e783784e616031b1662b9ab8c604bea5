@@ -1,0 +1,27 @@
+newtab.html
+  9bb266001cee5112 12
+newtab.css
+  9bb266001cee5112 19-34,496-527
+newtab.js
+  9bb266001cee5112 92,430-461,465,482,508-513
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.23",
+  "base_commit_sha": "7889db96e783784e616031b1662b9ab8c604bea5",
+  "prompts": {
+    "9bb266001cee5112": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "820ba685-0900-4888-8b6c-f9365646401c",
+        "model": "kimi-k2.5"
+      },
+      "human_author": "rajachinni <rajachinni555@gmail.com>",
+      "messages": [],
+      "total_additions": 90,
+      "total_deletions": 0,
+      "accepted_lines": 90,
+      "overriden_lines": 0
+    }
+  }
+}
