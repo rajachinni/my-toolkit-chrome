@@ -6,6 +6,12 @@ class DomainBlocker {
         this.domainList = document.getElementById('domainList');
         this.domainSection = document.getElementById('domainSection');
         this.domainControls = document.getElementById('domainControls');
+        
+        // Name management elements
+        this.userNameInput = document.getElementById('userNameInput');
+        this.saveNameButton = document.getElementById('saveNameButton');
+        this.nameFeedback = document.getElementById('nameFeedback');
+        
         this.init();
     }
     
@@ -20,6 +26,9 @@ class DomainBlocker {
         // Load blocked domains
         await this.loadBlockedDomains();
         
+        // Load user name
+        await this.loadUserName();
+        
         // Add event listeners
         this.toggle.addEventListener('click', () => this.toggleFeature());
         this.domainInput.addEventListener('keypress', (e) => {
@@ -27,6 +36,18 @@ class DomainBlocker {
                 this.addDomain();
             }
         });
+        
+        // Name management event listeners
+        if (this.saveNameButton) {
+            this.saveNameButton.addEventListener('click', () => this.saveUserName());
+        }
+        if (this.userNameInput) {
+            this.userNameInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.saveUserName();
+                }
+            });
+        }
 
     }
     
@@ -176,6 +197,52 @@ class DomainBlocker {
                 });
             });
         });
+    }
+    
+    async loadUserName() {
+        return new Promise((resolve) => {
+            chrome.storage.sync.get(['userName'], (result) => {
+                const name = result.userName || '';
+                if (this.userNameInput) {
+                    this.userNameInput.value = name;
+                }
+                resolve(name);
+            });
+        });
+    }
+    
+    async saveUserName() {
+        if (!this.userNameInput || !this.nameFeedback) return;
+        
+        const name = this.userNameInput.value.trim();
+        
+        try {
+            await new Promise((resolve, reject) => {
+                chrome.storage.sync.set({ userName: name }, () => {
+                    if (chrome.runtime.lastError) {
+                        reject(chrome.runtime.lastError);
+                    } else {
+                        resolve();
+                    }
+                });
+            });
+            
+            this.nameFeedback.textContent = name ? 'Name saved!' : 'Name cleared!';
+            this.nameFeedback.className = 'setting-feedback';
+            
+            // Clear feedback after 2 seconds
+            setTimeout(() => {
+                this.nameFeedback.textContent = '';
+            }, 2000);
+            
+        } catch (error) {
+            this.nameFeedback.textContent = 'Failed to save name';
+            this.nameFeedback.className = 'setting-feedback error';
+            
+            setTimeout(() => {
+                this.nameFeedback.textContent = '';
+            }, 3000);
+        }
     }
 }
 

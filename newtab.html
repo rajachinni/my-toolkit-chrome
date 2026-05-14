@@ -12,6 +12,11 @@
     <div class="container">
         <div class="search-wrapper">
             <h1 id="greetingText" class="greeting-text"></h1>
+            <div id="namePrompt" class="name-prompt" style="display: none;">
+                <div class="name-prompt-text">What's your name?</div>
+                <input type="text" id="nameInput" class="name-input" placeholder="Enter your name" maxlength="50">
+                <div class="name-prompt-hint">Press Enter to save</div>
+            </div>
             <div class="search-box">
                 <span id="enginePrefix" class="engine-prefix" aria-hidden="true"></span>
                 <span class="engine-prefix-divider" aria-hidden="true"></span>
@@ -24,6 +29,13 @@
                     spellcheck="false"
                     autofocus
                 ></textarea>
+                <button type="button" id="shortcutsButton" class="shortcuts-button" title="View shortcuts">⌘</button>
+            </div>
+            
+            <div id="shortcutsMenu" class="shortcuts-menu" style="display: none;">
+                <div class="shortcuts-header">Shortcuts</div>
+                <div class="shortcuts-help">Type alias at start or end: <code>ggl cats</code> or <code>cats ggl</code></div>
+                <div id="shortcutsList" class="shortcuts-list"></div>
             </div>
 
             <div id="bookmarksResults" class="bookmarks-results"></div>

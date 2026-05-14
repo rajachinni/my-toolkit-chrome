@@ -136,7 +136,7 @@ html, body {
     outline: none;
     resize: none;
     margin: 0;
-    padding: 0;
+    padding: 0 36px 0 0;
     font-family: 'Manrope', system-ui, sans-serif;
     font-size: var(--search-font);
     font-weight: 400;
@@ -322,4 +322,158 @@ html, body {
     background: var(--surface-hover);
     border-color: var(--border-strong);
     color: var(--text-primary);
+}
+
+.name-prompt {
+    text-align: center;
+    margin: 20px 0;
+    padding: 20px;
+    background: var(--surface-muted);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.name-prompt-text {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.name-input {
+    width: 100%;
+    max-width: 280px;
+    padding: 12px 16px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--text-primary);
+    font-family: 'Manrope', system-ui, sans-serif;
+    font-size: 14px;
+    text-align: center;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.name-input:focus {
+    outline: none;
+    border-color: var(--engine-color, var(--accent-warm));
+    background: var(--bg-overlay);
+}
+
+.name-input::placeholder {
+    color: var(--text-muted);
+}
+
+.name-prompt-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 8px;
+}
+
+.shortcuts-button {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: var(--surface-muted);
+    color: var(--text-muted);
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.shortcuts-button:hover {
+    background: var(--surface-hover);
+    color: var(--text-secondary);
+    transform: translateY(-50%) scale(1.05);
+}
+
+.shortcuts-button:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.shortcuts-menu {
+    margin-top: 8px;
+    background: var(--surface-muted);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 16px;
+    animation: slideIn 0.2s ease-out;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.shortcuts-header {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.shortcuts-help {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+
+.shortcuts-help code {
+    background: var(--surface);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.shortcuts-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 6px;
+}
+
+.shortcut-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px;
+    background: var(--surface);
+    border-radius: 6px;
+    font-size: 12px;
+    transition: background 0.15s ease;
+    cursor: pointer;
+}
+
+.shortcut-item:hover {
+    background: var(--surface-hover);
+}
+
+.shortcut-alias {
+    font-family: 'Courier New', monospace;
+    color: var(--engine-color, var(--accent-warm));
+    font-weight: 600;
+}
+
+.shortcut-name {
+    color: var(--text-secondary);
+    margin-left: auto;
 }

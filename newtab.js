@@ -18,6 +18,7 @@ const VISIBLE_ENGINES = ENGINES.filter(engine => !ALIAS_ONLY_ENGINE_IDS.has(engi
 
 let currentBookmarks = [];
 let selectedBookmarkIndex = -1;
+let userName = ''; // Will be loaded from storage
 
 function escapeHtml(str) {
     return String(str)
@@ -87,6 +88,7 @@ function getEngineLogoHtml(engineId) {
 }
 
 const STORAGE_KEY = 'selectedSearchEngine';
+const USER_NAME_KEY = 'userName';
 const ENGINE_PENDING_QUERY_HANDLERS = {
     claude: {
         storageKey: 'claudePendingPlain',
@@ -266,35 +268,36 @@ function autoGrow(textarea) {
     textarea.style.height = textarea.scrollHeight + 'px';
 }
 
-function getGreeting() {
+function getGreeting(name = '') {
     const date = new Date();
     const hour = date.getHours();
     const day = date.getDay();
+    const nameStr = name ? `, ${name}` : '';
 
     if (Math.random() < 0.2) {
-        const generics = ['Welcome, Teja!', 'What’s on your mind, Teja?'];
+        const generics = [`Welcome${nameStr}!`, `What’s on your mind${nameStr}?`];
         return generics[Math.floor(Math.random() * generics.length)];
     }
 
     const greetings = [];
 
     if (hour >= 5 && hour < 12) {
-        greetings.push('Good morning, Teja!');
+        greetings.push(`Good morning${nameStr}!`);
     } else if (hour >= 12 && hour < 18) {
-        greetings.push('Good afternoon, Teja!');
+        greetings.push(`Good afternoon${nameStr}!`);
     } else if (hour >= 18 && hour < 20) {
-        greetings.push('Good evening, Teja!', 'Evening, Teja!');
+        greetings.push(`Good evening${nameStr}!`, `Evening${nameStr}!`);
     } else if (hour >= 23) {
         greetings.push('Hello, night owl!');
     } else {
-        greetings.push('Good night, Teja!');
+        greetings.push(`Good night${nameStr}!`);
     }
 
-    if (day === 1 && hour < 16) greetings.push('Happy Monday, Teja!');
-    else if (day === 2) greetings.push('Happy Tuesday, Teja!');
-    else if (day === 5 && hour < 16) greetings.push('Happy Friday, Teja!');
-    else if (day === 5 && hour >= 16) greetings.push('Happy Weekend, Teja!');
-    else if (day === 0 || day === 6) greetings.push('Happy Weekend, Teja!');
+    if (day === 1 && hour < 16) greetings.push(`Happy Monday${nameStr}!`);
+    else if (day === 2) greetings.push(`Happy Tuesday${nameStr}!`);
+    else if (day === 5 && hour < 16) greetings.push(`Happy Friday${nameStr}!`);
+    else if (day === 5 && hour >= 16) greetings.push(`Happy Weekend${nameStr}!`);
+    else if (day === 0 || day === 6) greetings.push(`Happy Weekend${nameStr}!`);
 
     return greetings[Math.floor(Math.random() * greetings.length)];
 }
@@ -304,7 +307,90 @@ function renderGreeting() {
     if (!greetingText) {
         return;
     }
-    greetingText.textContent = getGreeting();
+    greetingText.textContent = getGreeting(userName);
+}
+
+function showNamePrompt() {
+    const namePrompt = document.getElementById('namePrompt');
+    const greetingText = document.getElementById('greetingText');
+    const nameInput = document.getElementById('nameInput');
+    
+    if (!namePrompt || !greetingText || !nameInput) return;
+    
+    greetingText.textContent = 'Welcome!';
+    namePrompt.style.display = 'block';
+    
+    // Focus the input after a brief delay to ensure it's visible
+    setTimeout(() => {
+        nameInput.focus();
+    }, 100);
+    
+    // Handle enter key to save name
+    nameInput.addEventListener('keydown', async (e) => {
+        if (e.key === 'Enter') {
+            const name = nameInput.value.trim();
+            if (name) {
+                await saveUserName(name);
+                hideNamePrompt();
+                renderGreeting();
+            }
+        }
+    });
+}
+
+function hideNamePrompt() {
+    const namePrompt = document.getElementById('namePrompt');
+    if (namePrompt) {
+        namePrompt.style.display = 'none';
+    }
+}
+
+function renderShortcuts() {
+    const shortcutsList = document.getElementById('shortcutsList');
+    if (!shortcutsList) return;
+    
+    shortcutsList.innerHTML = ENGINES.map(engine => `
+        <div class="shortcut-item" data-alias="${engine.alias}">
+            <span class="shortcut-alias">${engine.alias}</span>
+            <span class="shortcut-name">${engine.name}</span>
+        </div>
+    `).join('');
+    
+    // Add click handlers to shortcut items
+    shortcutsList.querySelectorAll('.shortcut-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const alias = item.dataset.alias;
+            const input = document.getElementById('searchInput');
+            if (input) {
+                input.value = `${alias} `;
+                input.focus();
+                hideShortcutsMenu();
+                // Trigger input event to update UI
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        });
+    });
+}
+
+function toggleShortcutsMenu() {
+    const shortcutsMenu = document.getElementById('shortcutsMenu');
+    if (!shortcutsMenu) return;
+    
+    const isVisible = shortcutsMenu.style.display !== 'none';
+    
+    if (isVisible) {
+        shortcutsMenu.style.display = 'none';
+    } else {
+        renderShortcuts();
+        shortcutsMenu.style.display = 'block';
+    }
+}
+
+function hideShortcutsMenu() {
+    const shortcutsMenu = document.getElementById('shortcutsMenu');
+    if (shortcutsMenu) {
+        shortcutsMenu.style.display = 'none';
+    }
 }
 
 async function loadSavedEngine() {
@@ -319,9 +405,38 @@ async function loadSavedEngine() {
     }
 }
 
+async function loadUserName() {
+    try {
+        const result = await chrome.storage.sync.get([USER_NAME_KEY]);
+        userName = result[USER_NAME_KEY] || '';
+        return userName;
+    } catch {
+        userName = '';
+        return userName;
+    }
+}
+
+async function saveUserName(name) {
+    try {
+        await chrome.storage.sync.set({ [USER_NAME_KEY]: name });
+        userName = name;
+        return true;
+    } catch {
+        return false;
+    }
+}
+
 async function init() {
-    renderGreeting();
+    await loadUserName();
     await loadSavedEngine();
+    
+    // Show name prompt if no name is set
+    if (!userName.trim()) {
+        showNamePrompt();
+    } else {
+        renderGreeting();
+    }
+    
     renderEngines();
     applyEngineTheme(getActiveEngine());
     updateEnginePrefix(getActiveEngine());
@@ -329,6 +444,7 @@ async function init() {
     const input = document.getElementById('searchInput');
     const closeOtherTabsButton = document.getElementById('closeOtherTabsButton');
     const manageExtensionsButton = document.getElementById('manageExtensionsButton');
+    const shortcutsButton = document.getElementById('shortcutsButton');
 
     if (closeOtherTabsButton) {
         closeOtherTabsButton.addEventListener('click', async () => {
@@ -345,6 +461,32 @@ async function init() {
             chrome.tabs.update({ url: 'chrome://extensions' });
         });
     }
+
+    if (shortcutsButton) {
+        shortcutsButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleShortcutsMenu();
+        });
+    }
+
+    // Close shortcuts menu when clicking outside or pressing Escape
+    document.addEventListener('click', (e) => {
+        const shortcutsMenu = document.getElementById('shortcutsMenu');
+        const shortcutsButton = document.getElementById('shortcutsButton');
+        
+        if (shortcutsMenu && shortcutsButton && 
+            !shortcutsMenu.contains(e.target) && 
+            !shortcutsButton.contains(e.target)) {
+            hideShortcutsMenu();
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            hideShortcutsMenu();
+        }
+    });
 
     input.addEventListener('input', () => {
         autoGrow(input);

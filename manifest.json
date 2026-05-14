@@ -87,7 +87,8 @@
         "storage",
         "tabs",
         "contextMenus",
-        "bookmarks"
+        "bookmarks",
+        "identity"
     ],
     "background": {
         "service_worker": "custom-context-menu-actions.js"
