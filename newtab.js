@@ -89,6 +89,7 @@ function getEngineLogoHtml(engineId) {
 
 const STORAGE_KEY = 'selectedSearchEngine';
 const USER_NAME_KEY = 'userName';
+const THEME_KEY = 'theme';
 const ENGINE_PENDING_QUERY_HANDLERS = {
     claude: {
         storageKey: 'claudePendingPlain',
@@ -426,9 +427,42 @@ async function saveUserName(name) {
     }
 }
 
+// Theme management
+let currentTheme = 'dark';
+
+async function loadTheme() {
+    try {
+        const result = await chrome.storage.sync.get([THEME_KEY]);
+        currentTheme = result[THEME_KEY] || 'dark';
+        applyTheme(currentTheme);
+    } catch {
+        currentTheme = 'dark';
+        applyTheme(currentTheme);
+    }
+}
+
+function applyTheme(theme) {
+    if (theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+        document.documentElement.removeAttribute('data-theme');
+    }
+}
+
+async function toggleTheme() {
+    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(currentTheme);
+    try {
+        await chrome.storage.sync.set({ [THEME_KEY]: currentTheme });
+    } catch {
+        // Ignore storage errors
+    }
+}
+
 async function init() {
     await loadUserName();
     await loadSavedEngine();
+    await loadTheme();
     
     // Show name prompt if no name is set
     if (!userName.trim()) {
@@ -445,6 +479,7 @@ async function init() {
     const closeOtherTabsButton = document.getElementById('closeOtherTabsButton');
     const manageExtensionsButton = document.getElementById('manageExtensionsButton');
     const shortcutsButton = document.getElementById('shortcutsButton');
+    const themeToggle = document.getElementById('themeToggle');
 
     if (closeOtherTabsButton) {
         closeOtherTabsButton.addEventListener('click', async () => {
@@ -467,6 +502,12 @@ async function init() {
             e.preventDefault();
             e.stopPropagation();
             toggleShortcutsMenu();
+        });
+    }
+
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            toggleTheme();
         });
     }
 
