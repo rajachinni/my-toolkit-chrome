@@ -183,6 +183,23 @@ function renderEngines() {
                 }
             }
         });
+
+        const openEngineHome = (event) => {
+            event.preventDefault();
+            const id = btn.dataset.engine;
+            const engine = ENGINES.find(e => e.id === id);
+            if (engine) {
+                window.location.href = engine.externalUrl || homeUrlWithoutQuery(engine.homeUrl);
+            }
+        };
+
+        btn.addEventListener('contextmenu', openEngineHome);
+
+        btn.addEventListener('auxclick', (event) => {
+            if (event.button === 1) {
+                openEngineHome(event);
+            }
+        });
     });
 }
 
