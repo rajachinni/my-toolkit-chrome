@@ -5,7 +5,7 @@
     const RETRY_INTERVAL_MS = 200;
 
     const PREFIX_TEXT =
-        'Rewrite in simple language, no em dashes, Fix grammar & improve structure if needed:\n\n';
+        'Rewrite this for posting on twitter:\n\n';
 
     function findInputElement() {
         return (
@@ -34,6 +34,20 @@
         );
     }
 
+    function pressEnter(inputEl) {
+        const eventOptions = {
+            key: 'Enter',
+            code: 'Enter',
+            keyCode: 13,
+            which: 13,
+            bubbles: true,
+            cancelable: true,
+        };
+        inputEl.dispatchEvent(new KeyboardEvent('keydown', eventOptions));
+        inputEl.dispatchEvent(new KeyboardEvent('keypress', eventOptions));
+        inputEl.dispatchEvent(new KeyboardEvent('keyup', eventOptions));
+    }
+
     function tryInsert(fullText, storageKeyToClear, attempt = 0) {
         const inputEl = findInputElement();
 
@@ -45,6 +59,7 @@
         }
 
         insertTextIntoInput(inputEl, fullText);
+        requestAnimationFrame(() => pressEnter(inputEl));
         chrome.storage.local.remove(storageKeyToClear);
     }
 

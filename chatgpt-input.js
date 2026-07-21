@@ -61,12 +61,27 @@
         );
     }
 
+    function pressEnter(inputEl) {
+        const eventOptions = {
+            key: 'Enter',
+            code: 'Enter',
+            keyCode: 13,
+            which: 13,
+            bubbles: true,
+            cancelable: true,
+        };
+        inputEl.dispatchEvent(new KeyboardEvent('keydown', eventOptions));
+        inputEl.dispatchEvent(new KeyboardEvent('keypress', eventOptions));
+        inputEl.dispatchEvent(new KeyboardEvent('keyup', eventOptions));
+    }
+
     function tryInsert(text, attempt = 0) {
         const inputEl = findInputElement();
 
         if (inputEl) {
             requestAnimationFrame(() => {
                 insertTextIntoInput(inputEl, text);
+                requestAnimationFrame(() => pressEnter(inputEl));
             });
             return;
         }
@@ -77,7 +92,7 @@
     }
 
     const PREFIX_TEXT =
-        'Rewrite in simple language, no em dashes, Fix grammar & improve structure if needed:\n\n';
+        'Rewrite this for posting on twitter:\n\n';
 
     async function checkForPendingText() {
         const result = await chrome.storage.local.get(PENDING_TEXT_KEY);
