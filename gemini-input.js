@@ -54,12 +54,59 @@
         );
     }
 
+    function pressEnter(inputEl) {
+        const eventOptions = {
+            key: 'Enter',
+            code: 'Enter',
+            keyCode: 13,
+            which: 13,
+            bubbles: true,
+            cancelable: true,
+        };
+        inputEl.dispatchEvent(new KeyboardEvent('keydown', eventOptions));
+        inputEl.dispatchEvent(new KeyboardEvent('keypress', eventOptions));
+        inputEl.dispatchEvent(new KeyboardEvent('keyup', eventOptions));
+    }
+
+    function findSubmitButton() {
+        const selectors = [
+            'button[aria-label="Send message"]',
+            'button[aria-label="Send"]',
+            'button.send-button',
+            'button[mattooltip="Send message"]',
+        ];
+
+        for (const selector of selectors) {
+            const button = document.querySelector(selector);
+            if (button && !button.disabled && button.getAttribute('aria-disabled') !== 'true') {
+                return button;
+            }
+        }
+
+        return null;
+    }
+
+    function submitPrompt(inputEl, attempt = 0) {
+        const button = findSubmitButton();
+        if (button) {
+            button.click();
+            return;
+        }
+
+        if (attempt < MAX_RETRIES) {
+            setTimeout(() => submitPrompt(inputEl, attempt + 1), RETRY_INTERVAL_MS);
+        } else {
+            pressEnter(inputEl);
+        }
+    }
+
     function tryInsert(text, attempt = 0) {
         const inputEl = findInputElement();
 
         if (inputEl) {
             requestAnimationFrame(() => {
                 insertTextIntoInput(inputEl, text);
+                requestAnimationFrame(() => submitPrompt(inputEl));
             });
             return;
         }
