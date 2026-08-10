@@ -61,12 +61,39 @@
         );
     }
 
+    function clickSubmitButton(attempt = 0) {
+        const button =
+            document.querySelector('#composer-submit-button') ||
+            document.querySelector('button[data-testid="send-button"]');
+        const inputEl = findInputElement();
+        const hasPromptText = inputEl && inputEl.innerText.trim();
+
+        if (
+            button &&
+            hasPromptText &&
+            !button.disabled &&
+            button.getAttribute('aria-disabled') !== 'true'
+        ) {
+            button.click();
+            return;
+        }
+
+        if (attempt < 25) {
+            setTimeout(() => clickSubmitButton(attempt + 1), 200);
+        }
+    }
+
+    function getPromptFromUrl() {
+        return new URLSearchParams(window.location.search).get('prompt')?.trim() || '';
+    }
+
     function tryInsert(text, attempt = 0) {
         const inputEl = findInputElement();
 
         if (inputEl) {
             requestAnimationFrame(() => {
                 insertTextIntoInput(inputEl, text);
+                setTimeout(() => clickSubmitButton(), 700);
             });
             return;
         }
@@ -77,12 +104,17 @@
     }
 
     const PREFIX_TEXT =
-        'Rewrite in simple language, no em dashes, Fix grammar & improve structure if needed:\n\n';
+        'Rewrite this for posting on twitter:\n\n';
 
     async function checkForPendingText() {
         const result = await chrome.storage.local.get(PENDING_TEXT_KEY);
         const text = result[PENDING_TEXT_KEY];
-        if (!text) return;
+        if (!text) {
+            if (getPromptFromUrl()) {
+                clickSubmitButton();
+            }
+            return;
+        }
 
         await chrome.storage.local.remove(PENDING_TEXT_KEY);
         tryInsert(PREFIX_TEXT + text);
