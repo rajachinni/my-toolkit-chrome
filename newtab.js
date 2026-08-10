@@ -280,7 +280,11 @@ async function performSearch(rawQuery, forcedEngine = null) {
 
 function autoGrow(textarea) {
     textarea.style.height = 'auto';
-    textarea.style.height = textarea.scrollHeight + 'px';
+    const maxHeight = parseFloat(getComputedStyle(textarea).maxHeight);
+    const nextHeight = Number.isFinite(maxHeight)
+        ? Math.min(textarea.scrollHeight, maxHeight)
+        : textarea.scrollHeight;
+    textarea.style.height = nextHeight + 'px';
 }
 
 function getGreeting() {

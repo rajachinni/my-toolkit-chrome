@@ -67,7 +67,7 @@ html, body {
 .search-box {
     --search-line: 1.45;
     --search-font: 20px;
-    --search-max-lines: 17;
+    --search-max-lines: 6;
     --engine-prefix-size: 20px;
     background: var(--surface);
     border: 1px solid color-mix(in srgb, var(--surface) 72%, var(--border-subtle));
